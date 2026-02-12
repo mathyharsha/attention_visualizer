@@ -12,7 +12,7 @@
     background: #eaedf1; color: #2d2d30; min-height: 100vh;
   }
 
-  /* Upload screen */
+  /* Upload screen (fallback if no demo) */
   #upload-screen {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     min-height: 100vh; gap: 24px; padding: 40px;
@@ -44,7 +44,7 @@
   /* Viz screen */
   #viz-screen { display: none; padding: 8px; }
   #top-bar {
-    display: flex; align-items: center; gap: 16px;
+    display: flex; align-items: center; gap: 10px;
     padding: 8px 12px; background: #f5f6f8; border: 1px solid #d0d3d9; border-radius: 8px;
     margin-bottom: 8px; flex-wrap: wrap;
   }
@@ -53,12 +53,19 @@
     background: #e4f2ef; padding: 4px 10px; border-radius: 4px;
   }
   .dims { font-size: 12px; color: #6b6b76; }
-  #btn-reload {
-    margin-left: auto; background: #e2e4e9; border: 1px solid #c5c8cf;
+  .top-btn {
+    background: #e2e4e9; border: 1px solid #c5c8cf;
     color: #555; padding: 5px 14px; border-radius: 6px; cursor: pointer;
     font-size: 12px; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
   }
-  #btn-reload:hover { background: #d0d3d9; color: #1a1a1e; }
+  .top-btn:hover { background: #d0d3d9; color: #1a1a1e; }
+  .top-btn.accent { background: #e4f2ef; border-color: #a3d5cd; color: #1a7a6e; }
+  .top-btn.accent:hover { background: #cce8e2; }
+  #btn-spacer { margin-left: auto; }
+  .demo-tag {
+    font-size: 10px; background: #fff3cd; color: #856404; padding: 2px 7px;
+    border-radius: 3px; font-weight: 600; letter-spacing: 0.3px;
+  }
 
   /* Error banner */
   #viz-error {
@@ -127,7 +134,6 @@
   #scroll-container::-webkit-scrollbar { width: 8px; }
   #scroll-container::-webkit-scrollbar-track { background: #e2e4e9; }
   #scroll-container::-webkit-scrollbar-thumb { background: #b8bcc4; border-radius: 4px; }
-  #scroll-container::-webkit-scrollbar-thumb:hover { background: #999; }
 </style>
 </head>
 <body>
@@ -152,7 +158,10 @@
   <div id="top-bar">
     <span class="file-info" id="file-name"></span>
     <span class="dims" id="dims-info"></span>
-    <button id="btn-reload">Load another file</button>
+    <span class="demo-tag" id="demo-tag" style="display:none;">DEMO</span>
+    <span id="btn-spacer"></span>
+    <button class="top-btn accent" id="btn-revert" style="display:none;">Revert to demo</button>
+    <button class="top-btn" id="btn-load-custom">Load custom file</button>
   </div>
   <div id="viz-error"></div>
   <div id="controls"></div>
@@ -164,52 +173,39 @@
   </div>
 </div>
 
+<!-- Hidden file input for custom loading while viz is open -->
+<input type="file" id="custom-file-input" accept=".attnbin,.bin" style="display:none;">
+
 <script>
 // ================================================================
-//  WORKER (inline Blob)
+//  DEMO FILE CONFIG
+//  Place your demo.attnbin in the same directory as index.html
+// ================================================================
+const DEMO_FILE = 'demo.attnbin';
+
+// ================================================================
+//  WORKER
 // ================================================================
 let workerUrl = null;
 try {
-  const workerCode = `
+  const wc = `
 self.onmessage = function(e) {
   const {matrix, N, threshFrac, maxLines, layer} = e.data;
   let mn = Infinity, mx = -Infinity;
-  for (let i = 0, len = N * N; i < len; i++) {
-    const v = Math.abs(matrix[i]);
-    if (v < mn) mn = v;
-    if (v > mx) mx = v;
-  }
+  for (let i = 0, len = N * N; i < len; i++) { const v = Math.abs(matrix[i]); if (v < mn) mn = v; if (v > mx) mx = v; }
   const thresh = mn + threshFrac * (mx - mn);
   const entries = [];
-  for (let r = 0; r < N; r++) {
-    const base = r * N;
-    for (let c = 0; c < N; c++) {
-      const v = Math.abs(matrix[base + c]);
-      if (v >= thresh) entries.push((r << 16) | c | 0, v);
-    }
-  }
-  const n = entries.length / 2;
-  const idx = new Array(n);
-  for (let i = 0; i < n; i++) idx[i] = i;
+  for (let r = 0; r < N; r++) { const base = r * N; for (let c = 0; c < N; c++) { const v = Math.abs(matrix[base + c]); if (v >= thresh) entries.push((r << 16) | c | 0, v); } }
+  const n = entries.length / 2; const idx = new Array(n); for (let i = 0; i < n; i++) idx[i] = i;
   idx.sort((a, b) => entries[b * 2 + 1] - entries[a * 2 + 1]);
-  const limit = Math.min(n, maxLines);
-  const range = mx - thresh;
-  const result = new Float32Array(limit * 3);
-  for (let i = 0; i < limit; i++) {
-    const j = idx[i];
-    const rc = entries[j * 2];
-    const v = entries[j * 2 + 1];
-    let alpha = 0.08;
-    if (range > 0) alpha = 0.05 + ((v - thresh) / range) * 0.45;
-    result[i * 3] = rc >> 16;
-    result[i * 3 + 1] = rc & 0xFFFF;
-    result[i * 3 + 2] = alpha;
-  }
+  const limit = Math.min(n, maxLines); const range = mx - thresh; const result = new Float32Array(limit * 3);
+  for (let i = 0; i < limit; i++) { const j = idx[i]; const rc = entries[j * 2]; const v = entries[j * 2 + 1];
+    let alpha = 0.08; if (range > 0) alpha = 0.05 + ((v - thresh) / range) * 0.45;
+    result[i * 3] = rc >> 16; result[i * 3 + 1] = rc & 0xFFFF; result[i * 3 + 2] = alpha; }
   self.postMessage({result, layer, thresh, count: limit}, [result.buffer]);
-};
-`;
-  workerUrl = URL.createObjectURL(new Blob([workerCode], {type: 'application/javascript'}));
-} catch (e) { /* fallback to main thread */ }
+};`;
+  workerUrl = URL.createObjectURL(new Blob([wc], {type: 'application/javascript'}));
+} catch (e) {}
 
 // ================================================================
 //  CONSTANTS
@@ -232,42 +228,79 @@ const COL_SP = 175, SL_W = 155, TOP_PAD = 50, BOT_PAD = 15, MAX_TL = 600;
 let S = null, workers = [], threshCache = [], useWorkers = true;
 let chain = [], hlRects = [], segments = [];
 let pinnedIdx = -1, pinnedRect = null, activeRowIdx = -1;
+let demoBuf = null;   // cached demo ArrayBuffer
+let isDemo = false;    // true if currently showing demo data
 
 // ================================================================
 //  FILE HANDLING
 // ================================================================
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
+const customInput = document.getElementById('custom-file-input');
 const statusEl = document.getElementById('upload-status');
 const vizErrEl = document.getElementById('viz-error');
 
+// Upload screen interactions
 dropZone.addEventListener('click', () => fileInput.click());
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
 dropZone.addEventListener('drop', e => {
   e.preventDefault(); dropZone.classList.remove('dragover');
-  if (e.dataTransfer.files.length) loadFile(e.dataTransfer.files[0]);
+  if (e.dataTransfer.files.length) loadUserFile(e.dataTransfer.files[0]);
 });
-fileInput.addEventListener('change', e => { if (e.target.files.length) loadFile(e.target.files[0]); });
-document.getElementById('btn-reload').addEventListener('click', () => {
-  document.getElementById('viz-screen').style.display = 'none';
-  document.getElementById('upload-screen').style.display = 'flex';
-  teardown();
-});
+fileInput.addEventListener('change', e => { if (e.target.files.length) loadUserFile(e.target.files[0]); });
 
-async function loadFile(file) {
+// Viz screen buttons
+document.getElementById('btn-load-custom').addEventListener('click', () => customInput.click());
+customInput.addEventListener('change', e => {
+  if (e.target.files.length) loadUserFile(e.target.files[0]);
+  customInput.value = '';  // allow re-selecting same file
+});
+document.getElementById('btn-revert').addEventListener('click', revertToDemo);
+
+// ---- Load user file ----
+async function loadUserFile(file) {
   statusEl.className = 'status-msg loading';
-  statusEl.textContent = `Loading ${file.name} (${(file.size/1e6).toFixed(1)} MB)...`;
+  statusEl.textContent = `Loading ${file.name}...`;
   try {
     const buf = await file.arrayBuffer();
-    parseAndInit(buf, file.name);
+    initViz(buf, file.name, false);
   } catch (err) {
     statusEl.className = 'status-msg error';
     statusEl.textContent = 'Error: ' + err.message;
   }
 }
 
-function parseAndInit(buf, fileName) {
+// ---- Load demo ----
+async function loadDemo() {
+  statusEl.className = 'status-msg loading';
+  statusEl.textContent = 'Loading demo data...';
+  try {
+    const resp = await fetch(DEMO_FILE);
+    if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`);
+    demoBuf = await resp.arrayBuffer();
+    initViz(demoBuf, DEMO_FILE, true);
+  } catch (err) {
+    // Demo not found — show upload screen
+    console.log('No demo file found, showing upload screen:', err.message);
+    statusEl.textContent = '';
+    document.getElementById('upload-screen').style.display = 'flex';
+  }
+}
+
+// ---- Revert to demo ----
+function revertToDemo() {
+  if (demoBuf) {
+    initViz(demoBuf, DEMO_FILE, true);
+  }
+}
+
+// ================================================================
+//  PARSE & INIT
+// ================================================================
+function initViz(buf, fileName, demoMode) {
+  teardown();
+
   const view = new DataView(buf);
   const headerLen = view.getUint32(0, true);
   if (headerLen > buf.byteLength - 4 || headerLen > 1e7)
@@ -277,7 +310,6 @@ function parseAndInit(buf, fileName) {
   let jsonEnd = headerLen;
   while (jsonEnd > 0 && headerRaw[jsonEnd - 1] === 0) jsonEnd--;
   const header = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 4, jsonEnd)));
-
   if (header.format !== 'attnbin_v1') throw new Error('Unknown format: ' + header.format);
 
   const {N, B, H, L} = header;
@@ -286,18 +318,16 @@ function parseAndInit(buf, fileName) {
   const dataStart = 4 + headerLen;
   const boundsSize = B * N * 4;
   const layerBytes = B * H * N * N * bpf;
-  const sliceFloats = N * N;
-  const sliceBytes = sliceFloats * bpf;
   const expectedTotal = dataStart + boundsSize + L * layerBytes;
-
   if (buf.byteLength < expectedTotal)
-    throw new Error(`File too small: expected ${expectedTotal} bytes, got ${buf.byteLength}`);
+    throw new Error(`File too small: expected ${expectedTotal}, got ${buf.byteLength}`);
 
   S = {
     buf, N, B, H, L, isFp16, bpf,
     ids: header.reaction_ids,
     fullNames: header.full_names || header.reaction_ids,
-    dataStart, boundsSize, layerBytes, sliceBytes, sliceFloats, fileName,
+    dataStart, boundsSize, layerBytes,
+    sliceBytes: N * N * bpf, sliceFloats: N * N, fileName,
   };
 
   const col0x = NAME_X + NAME_W + GUIDE_GAP;
@@ -307,11 +337,14 @@ function parseAndInit(buf, fileName) {
   S.svgHeight = TOP_PAD + N * (NODE_H + GAP) + BOT_PAD;
   S.bandX = NAME_X; S.bandW = S.colX[L] + NODE_W - NAME_X;
 
+  isDemo = demoMode;
   statusEl.textContent = '';
   document.getElementById('upload-screen').style.display = 'none';
   document.getElementById('viz-screen').style.display = 'block';
   document.getElementById('file-name').textContent = fileName;
   document.getElementById('dims-info').textContent = `N=${N}  B=${B}  H=${H}  L=${L}  ${isFp16?'fp16':'fp32'}`;
+  document.getElementById('demo-tag').style.display = demoMode ? 'inline' : 'none';
+  document.getElementById('btn-revert').style.display = (!demoMode && demoBuf) ? 'inline-block' : 'none';
   vizErrEl.style.display = 'none';
 
   try { buildViz(); }
@@ -319,7 +352,7 @@ function parseAndInit(buf, fileName) {
 }
 
 // ================================================================
-//  DATA ACCESS (alignment-safe)
+//  DATA ACCESS
 // ================================================================
 function getBoundsSlice(batch) {
   const off = S.dataStart + batch * S.N * 4;
@@ -327,7 +360,6 @@ function getBoundsSlice(batch) {
   new Uint8Array(dst.buffer).set(new Uint8Array(S.buf, off, S.N * 4));
   return dst;
 }
-
 function getAttentionSlice(layer, batch, head) {
   const off = S.dataStart + S.boundsSize + layer * S.layerBytes + (batch * S.H + head) * S.sliceBytes;
   if (S.isFp16) {
@@ -341,7 +373,6 @@ function getAttentionSlice(layer, batch, head) {
   new Uint8Array(f32.buffer).set(new Uint8Array(S.buf, off, S.sliceFloats * 4));
   return f32;
 }
-
 function fp16to32(h) {
   const s = (h >> 15) & 1, e = (h >> 10) & 0x1F, m = h & 0x3FF;
   if (e === 0) return m === 0 ? (s ? -0 : 0) : (s ? -1 : 1) * (m / 1024) * Math.pow(2, -14);
@@ -375,7 +406,7 @@ function teardown() {
 }
 
 function buildViz() {
-  const {N, B, H, L, colX, totalWidth, svgHeight, bandX, bandW, yPos, ids, fullNames} = S;
+  const {N, B, H, L, colX, totalWidth, svgHeight, bandX, bandW, yPos, ids} = S;
 
   sizer.style.width = totalWidth + 'px'; sizer.style.height = svgHeight + 'px';
   canvas.width = totalWidth; canvas.height = svgHeight;
@@ -431,7 +462,6 @@ function buildViz() {
     }
   }
 
-  // Tooltip
   ttRect = mr(0,0,0,0,'tt');
   ttRect.setAttribute('rx',4); ttRect.setAttribute('ry',4);
   ttRect.setAttribute('fill','#fff'); ttRect.setAttribute('stroke','#c5c8cf');
@@ -562,7 +592,6 @@ function computeThreshMain(layer) {
   if(v) v.textContent = thresh.toExponential(2);
   drawCanvas();
 }
-
 function requestThresh(l) {
   if (useWorkers && workers[l]) {
     const sl = getAttentionSlice(l, curBatch, curHeads[l]);
@@ -570,7 +599,6 @@ function requestThresh(l) {
   } else computeThreshMain(l);
 }
 function requestAllThresh() { for (let l=0;l<S.L;l++) requestThresh(l); }
-
 function onWorkerMsg(e) {
   const {result, layer, thresh, count} = e.data;
   threshCache[layer] = {result: new Float32Array(result), count};
@@ -578,7 +606,6 @@ function onWorkerMsg(e) {
   if(v) v.textContent = thresh.toExponential(2);
   drawCanvas();
 }
-
 function drawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let l = 0; l < S.L; l++) {
@@ -587,8 +614,7 @@ function drawCanvas() {
     const x1 = S.colX[l]+NODE_W, x2 = S.colX[l+1];
     ctx.strokeStyle = '#999'; ctx.lineWidth = 0.8;
     for (let i = 0; i < count; i++) {
-      ctx.globalAlpha = result[i*3+2];
-      ctx.beginPath();
+      ctx.globalAlpha = result[i*3+2]; ctx.beginPath();
       ctx.moveTo(x1, S.yPos[result[i*3]]+NODE_H/2);
       ctx.lineTo(x2, S.yPos[result[i*3+1]]+NODE_H/2);
       ctx.stroke();
@@ -601,8 +627,7 @@ function drawCanvas() {
 //  RED FILLS
 // ================================================================
 function updateRedFills() {
-  const bv = getBoundsSlice(curBatch);
-  let mx = -Infinity;
+  const bv = getBoundsSlice(curBatch); let mx = -Infinity;
   for (let i=0;i<S.N;i++){const a=Math.abs(bv[i]);if(a>mx)mx=a;}
   if(mx<=0)mx=1;
   for (let i=0;i<S.N;i++) redRects[i].setAttribute('width',(Math.abs(bv[i])/mx)*NAME_W);
@@ -635,7 +660,6 @@ function hideTT(){ttText1.setAttribute('visibility','hidden');ttText2.setAttribu
 // ================================================================
 function clearChain(){hlRects.forEach(r=>r.remove());segments.forEach(s=>s.forEach(a=>a.remove()));hlRects=[];segments=[];chain=[];}
 function makeHL(col,idx){const p=3,r=mr(S.colX[col]-p,S.yPos[idx]-p,NODE_W+p*2,NODE_H+p*2,'hl');svgEl.appendChild(r);return r;}
-
 function makeSeg(kc,ki,qi){
   const m=getAttentionSlice(kc,curBatch,curHeads[kc]),val=m[ki*S.N+qi];
   let rn=Infinity,rx=-Infinity;
@@ -653,7 +677,6 @@ function makeSeg(kc,ki,qi){
   lbl.classList.add('vl');lbl.textContent=val.toExponential(3);svgEl.appendChild(lbl);arts.push(lbl);
   return arts;
 }
-
 function redrawAllSeg(){for(let i=0;i<segments.length;i++){segments[i].forEach(a=>a.remove());segments[i]=makeSeg(chain[i].col,chain[i].idx,chain[i+1].idx);}}
 function redrawSegForLayer(l){for(let i=0;i<segments.length;i++)if(chain[i].col===l){segments[i].forEach(a=>a.remove());segments[i]=makeSeg(chain[i].col,chain[i].idx,chain[i+1].idx);}}
 function extend(col,idx){const p=chain[chain.length-1];chain.push({col,idx});hlRects.push(makeHL(col,idx));segments.push(makeSeg(p.col,p.idx,idx));}
@@ -680,7 +703,6 @@ function onSvgClick(e){
   if(pos>=0&&pos<chain.length){if(chain[pos].idx===idx)truncFrom(pos);else replaceAt(pos,col,idx);return;}
   clearChain();chain.push({col,idx});hlRects.push(makeHL(col,idx));
 }
-
 function onSvgMove(e){
   const t=e.target;
   if(t.dataset&&t.dataset.nbar!==undefined){const i=parseInt(t.dataset.nbar);showRowBand(i);
@@ -718,6 +740,11 @@ function wireSearch(){
   });
   clr.addEventListener('click',clrS);
 }
+
+// ================================================================
+//  BOOT: try demo first, fall back to upload screen
+// ================================================================
+loadDemo();
 </script>
 </body>
 </html>
