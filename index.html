@@ -6,45 +6,31 @@
 <title>Attention Matrix Visualizer</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   body {
     font-family: 'DM Sans', sans-serif;
-    background: #0e0e12;
-    color: #d4d4d8;
-    min-height: 100vh;
+    background: #0e0e12; color: #d4d4d8; min-height: 100vh;
   }
 
-  /* ---- Upload screen ---- */
+  /* Upload screen */
   #upload-screen {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     min-height: 100vh; gap: 24px; padding: 40px;
   }
-  #upload-screen h1 {
-    font-size: 28px; font-weight: 600; color: #e4e4e7;
-    letter-spacing: -0.5px;
-  }
-  #upload-screen p { color: #71717a; font-size: 14px; max-width: 480px; text-align: center; line-height: 1.6; }
+  #upload-screen h1 { font-size: 28px; font-weight: 600; color: #e4e4e7; letter-spacing: -0.5px; }
+  #upload-screen p.subtitle { color: #71717a; font-size: 14px; max-width: 480px; text-align: center; line-height: 1.6; }
   #drop-zone {
     width: 480px; max-width: 90vw; padding: 48px 32px;
     border: 2px dashed #27272a; border-radius: 12px;
-    text-align: center; cursor: pointer; transition: all 0.2s;
-    background: #18181b;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: #18181b;
   }
-  #drop-zone:hover, #drop-zone.dragover {
-    border-color: #2a9d8f; background: #1a2520;
-  }
+  #drop-zone:hover, #drop-zone.dragover { border-color: #2a9d8f; background: #1a2520; }
   #drop-zone .icon { font-size: 36px; margin-bottom: 12px; }
   #drop-zone .main-text { font-size: 15px; color: #a1a1aa; }
   #drop-zone .sub-text { font-size: 12px; color: #52525b; margin-top: 8px; }
   #file-input { display: none; }
-  #upload-status {
-    font-size: 13px; color: #71717a; min-height: 20px;
-  }
-  #upload-status.error { color: #ef4444; }
-  #upload-status.loading { color: #2a9d8f; }
-
+  .status-msg { font-size: 13px; min-height: 20px; max-width: 600px; text-align: center; }
+  .status-msg.error { color: #ef4444; } .status-msg.loading { color: #2a9d8f; }
   .format-hint {
     background: #18181b; border: 1px solid #27272a; border-radius: 8px;
     padding: 16px 20px; max-width: 480px; width: 90vw;
@@ -55,21 +41,18 @@
   }
   .format-hint p { font-size: 13px; color: #71717a; line-height: 1.5; }
 
-  /* ---- Visualization screen ---- */
+  /* Viz screen */
   #viz-screen { display: none; padding: 8px; }
-
   #top-bar {
     display: flex; align-items: center; gap: 16px;
     padding: 8px 12px; background: #18181b; border-radius: 8px;
     margin-bottom: 8px; flex-wrap: wrap;
   }
-  #top-bar .file-info {
+  .file-info {
     font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #2a9d8f;
     background: #1a2520; padding: 4px 10px; border-radius: 4px;
   }
-  #top-bar .dims {
-    font-size: 12px; color: #71717a;
-  }
+  .dims { font-size: 12px; color: #71717a; }
   #btn-reload {
     margin-left: auto; background: #27272a; border: 1px solid #3f3f46;
     color: #a1a1aa; padding: 5px 14px; border-radius: 6px; cursor: pointer;
@@ -77,16 +60,25 @@
   }
   #btn-reload:hover { background: #3f3f46; color: #e4e4e7; }
 
-  /* Controls row */
-  #controls {
-    position: relative; height: 82px;
-    margin-bottom: 4px;
+  /* Error banner on viz screen */
+  #viz-error {
+    display: none; background: #2d1215; border: 1px solid #7f1d1d;
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #fca5a5;
+    white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto;
   }
 
-  /* Search */
-  #search-wrap {
-    position: absolute; left: 5px; top: 0; width: 200px; z-index: 10;
+  /* Debug panel */
+  #debug-panel {
+    display: none; background: #18181b; border: 1px solid #27272a;
+    border-radius: 8px; padding: 8px 12px; margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #71717a;
+    max-height: 120px; overflow-y: auto;
   }
+
+  /* Controls */
+  #controls { position: relative; height: 82px; margin-bottom: 4px; overflow: visible; }
+  #search-wrap { position: absolute; left: 5px; top: 0; width: 200px; z-index: 10; }
   #search-input {
     width: 100%; padding: 4px 26px 4px 8px;
     font-size: 11px; font-family: 'JetBrains Mono', monospace;
@@ -117,70 +109,60 @@
   .dd-item b { color: #e4e4e7; }
   .dd-item .fullname { color: #71717a; font-size: 10px; margin-left: 4px; }
 
-  /* Batch slider */
   .slider-box {
     position: absolute; font-size: 11px; color: #a1a1aa;
     background: #18181b; border: 1px solid #27272a;
     border-radius: 5px; padding: 3px 8px;
   }
   .slider-box .lbl { font-weight: 600; min-width: 14px; }
-  .slider-box .val { min-width: 20px; text-align: right; font-weight: 600; color: #e4e4e7;
-    font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+  .slider-box .val {
+    min-width: 20px; text-align: right; font-weight: 600; color: #e4e4e7;
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  }
   .slider-row { display: flex; align-items: center; gap: 4px; }
-  .slider-box input[type=range] {
-    flex: 1; height: 14px; cursor: pointer;
-    accent-color: #2a9d8f;
-  }
-  .layer-title {
-    font-weight: 600; text-align: center; margin-bottom: 2px;
-    color: #e4e4e7; font-size: 11px;
-  }
+  .slider-box input[type=range] { flex: 1; height: 14px; cursor: pointer; accent-color: #2a9d8f; }
+  .layer-title { font-weight: 600; text-align: center; margin-bottom: 2px; color: #e4e4e7; font-size: 11px; }
 
-  /* Canvas + SVG container */
   #scroll-container {
-    overflow-y: auto; background: #131316;
+    overflow: auto; background: #131316;
     border: 1px solid #27272a; border-radius: 0 0 8px 8px;
-    max-height: calc(100vh - 150px);
+    max-height: calc(100vh - 180px);
   }
   #content-sizer { position: relative; }
   #thresh-canvas { position: absolute; top: 0; left: 0; }
   #viz-svg { position: absolute; top: 0; left: 0; z-index: 1; }
 
-  /* Dark scrollbar */
   #scroll-container::-webkit-scrollbar { width: 8px; }
   #scroll-container::-webkit-scrollbar-track { background: #18181b; }
   #scroll-container::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-  #scroll-container::-webkit-scrollbar-thumb:hover { background: #52525b; }
 </style>
 </head>
 <body>
 
-<!-- ============ UPLOAD SCREEN ============ -->
 <div id="upload-screen">
   <h1>Attention Matrix Visualizer</h1>
-  <p>Interactive exploration of multi-layer neural network attention patterns in biochemical reaction networks.</p>
-
+  <p class="subtitle">Interactive exploration of multi-layer attention patterns in biochemical reaction networks.</p>
   <div id="drop-zone">
     <div class="icon">📂</div>
     <div class="main-text">Drop <code>.attnbin</code> file here or click to browse</div>
     <div class="sub-text">Supports fp32 and fp16 formats</div>
   </div>
   <input type="file" id="file-input" accept=".attnbin,.bin">
-  <div id="upload-status"></div>
-
+  <div id="upload-status" class="status-msg"></div>
   <div class="format-hint">
     <p>Export from Python with <code>export_attention.py</code>:</p>
     <p style="margin-top:6px;"><code>export_attention_data('model.attnbin', ids, names, tensors, bounds)</code></p>
   </div>
 </div>
 
-<!-- ============ VIZ SCREEN ============ -->
 <div id="viz-screen">
   <div id="top-bar">
     <span class="file-info" id="file-name"></span>
     <span class="dims" id="dims-info"></span>
     <button id="btn-reload">Load another file</button>
   </div>
+  <div id="viz-error"></div>
+  <div id="debug-panel"></div>
   <div id="controls"></div>
   <div id="scroll-container">
     <div id="content-sizer">
@@ -192,10 +174,28 @@
 
 <script>
 // ================================================================
-//  WEB WORKER (inline via Blob URL)
-//  Computes threshold entries for a single layer
+//  LOGGING
 // ================================================================
-const workerCode = `
+const debugEl = document.getElementById('debug-panel');
+const vizErrEl = document.getElementById('viz-error');
+function log(msg) {
+  console.log('[AV] ' + msg);
+  debugEl.style.display = 'block';
+  debugEl.textContent += msg + '\n';
+  debugEl.scrollTop = debugEl.scrollHeight;
+}
+function showVizError(msg) {
+  vizErrEl.style.display = 'block';
+  vizErrEl.textContent = msg;
+  console.error('[AV ERROR] ' + msg);
+}
+
+// ================================================================
+//  WORKER (inline Blob)
+// ================================================================
+let workerUrl = null;
+try {
+  const workerCode = `
 self.onmessage = function(e) {
   const {matrix, N, threshFrac, maxLines, layer} = e.data;
   let mn = Infinity, mx = -Infinity;
@@ -213,15 +213,13 @@ self.onmessage = function(e) {
       if (v >= thresh) entries.push((r << 16) | c | 0, v);
     }
   }
-  // Sort by value descending (pairs: [rc, v, rc, v, ...])
   const n = entries.length / 2;
   const idx = new Array(n);
   for (let i = 0; i < n; i++) idx[i] = i;
   idx.sort((a, b) => entries[b * 2 + 1] - entries[a * 2 + 1]);
-
   const limit = Math.min(n, maxLines);
   const range = mx - thresh;
-  const result = new Float32Array(limit * 3); // [r, c, alpha] triples
+  const result = new Float32Array(limit * 3);
   for (let i = 0; i < limit; i++) {
     const j = idx[i];
     const rc = entries[j * 2];
@@ -235,48 +233,42 @@ self.onmessage = function(e) {
   self.postMessage({result, layer, thresh, count: limit}, [result.buffer]);
 };
 `;
-const workerBlob = new Blob([workerCode], {type: 'application/javascript'});
-const workerUrl = URL.createObjectURL(workerBlob);
+  const blob = new Blob([workerCode], {type: 'application/javascript'});
+  workerUrl = URL.createObjectURL(blob);
+  console.log('[AV] Worker blob created OK');
+} catch (e) {
+  console.warn('[AV] Worker blob failed:', e);
+}
 
 // ================================================================
-//  PALETTE & CONSTANTS
+//  CONSTANTS
 // ================================================================
 const PALETTE = [
-  ['#2a9d8f','#1d7068','#3fc0b0'],
-  ['#c47a53','#8e5535','#dba07a'],
-  ['#7b68ae','#554889','#9d8dcf'],
-  ['#c97b84','#9e545d','#e4a5ad'],
-  ['#8a9a5b','#647040','#a8bb78'],
-  ['#6a7fdb','#4a5aab','#90a0ef'],
-  ['#b07aa1','#875c7d','#cf9ec2'],
-  ['#c4a35a','#9a7d3a','#dfbf7a'],
-  ['#56b6a6','#3d8f82','#78d4c5'],
-  ['#d4816b','#a85d4a','#eba591'],
-  ['#6b9e8a','#4c7a67','#8ec2ac'],
-  ['#a0855b','#7a6340','#c0a57b'],
+  ['#2a9d8f','#1d7068','#3fc0b0'],['#c47a53','#8e5535','#dba07a'],
+  ['#7b68ae','#554889','#9d8dcf'],['#c97b84','#9e545d','#e4a5ad'],
+  ['#8a9a5b','#647040','#a8bb78'],['#6a7fdb','#4a5aab','#90a0ef'],
+  ['#b07aa1','#875c7d','#cf9ec2'],['#c4a35a','#9a7d3a','#dfbf7a'],
+  ['#56b6a6','#3d8f82','#78d4c5'],['#d4816b','#a85d4a','#eba591'],
+  ['#6b9e8a','#4c7a67','#8ec2ac'],['#a0855b','#7a6340','#c0a57b'],
 ];
-
-const NAME_BLOCK_X = 5, NAME_BLOCK_W = 200, GUIDE_GAP = 25;
+const NAME_X = 5, NAME_W = 200, GUIDE_GAP = 25;
 const NODE_W = 22, NODE_H = 8, GAP = 1;
-const COL_SPACING = 175, SLIDER_GROUP_W = 155;
-const TOP_PAD = 50, BOT_PAD = 15, MAX_TL = 600;
+const COL_SP = 175, SL_W = 155, TOP_PAD = 50, BOT_PAD = 15, MAX_TL = 600;
 
 // ================================================================
 //  STATE
 // ================================================================
-let S = null;  // loaded state: {buf, header, N, B, H, L, ids, fullNames, ...}
-let workers = [];
-let threshCache = [];  // per-layer: {result, count}
+let S = null;
+let workers = [], threshCache = [], useWorkers = true;
 let chain = [], hlRects = [], segments = [];
-let pinnedIdx = -1, pinnedRect = null;
-let activeRowIdx = -1;
+let pinnedIdx = -1, pinnedRect = null, activeRowIdx = -1;
 
 // ================================================================
 //  FILE HANDLING
 // ================================================================
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
-const status = document.getElementById('upload-status');
+const statusEl = document.getElementById('upload-status');
 
 dropZone.addEventListener('click', () => fileInput.click());
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -293,401 +285,439 @@ document.getElementById('btn-reload').addEventListener('click', () => {
 });
 
 async function loadFile(file) {
-  status.className = 'loading';
-  status.textContent = `Loading ${file.name} (${(file.size/1e6).toFixed(1)} MB)...`;
+  statusEl.className = 'status-msg loading';
+  statusEl.textContent = `Loading ${file.name} (${(file.size/1e6).toFixed(1)} MB)...`;
   try {
     const buf = await file.arrayBuffer();
+    log(`File loaded: ${file.name}, ${buf.byteLength} bytes`);
     parseAndInit(buf, file.name);
   } catch (err) {
-    status.className = 'error';
-    status.textContent = 'Error: ' + err.message;
+    statusEl.className = 'status-msg error';
+    statusEl.textContent = 'Error: ' + err.message;
+    console.error(err);
   }
 }
 
 function parseAndInit(buf, fileName) {
+  // Read header length
   const view = new DataView(buf);
   const headerLen = view.getUint32(0, true);
-  const headerBytes = new Uint8Array(buf, 4, headerLen);
-  const header = JSON.parse(new TextDecoder().decode(headerBytes));
+  log(`Header length field: ${headerLen}, total buf: ${buf.byteLength}`);
+
+  if (headerLen > buf.byteLength - 4 || headerLen > 1e7) {
+    throw new Error(`Invalid header length: ${headerLen}. File may be corrupt or not .attnbin format.`);
+  }
+
+  // Read JSON header (strip zero padding)
+  const headerRaw = new Uint8Array(buf, 4, headerLen);
+  let jsonEnd = headerLen;
+  while (jsonEnd > 0 && headerRaw[jsonEnd - 1] === 0) jsonEnd--;
+  const headerStr = new TextDecoder().decode(new Uint8Array(buf, 4, jsonEnd));
+  log(`Header JSON (first 200): ${headerStr.substring(0, 200)}`);
+
+  let header;
+  try { header = JSON.parse(headerStr); }
+  catch (e) { throw new Error('Failed to parse header JSON: ' + e.message); }
 
   if (header.format !== 'attnbin_v1') throw new Error('Unknown format: ' + header.format);
 
   const {N, B, H, L} = header;
   const isFp16 = header.dtype === 'float16';
-  const bytesPerFloat = isFp16 ? 2 : 4;
+  const bpf = isFp16 ? 2 : 4;
   const dataStart = 4 + headerLen;
-  const boundsOffset = dataStart;
-  const boundsSize = B * N * 4;  // bounds always fp32
-  const layerSliceFloats = N * N;
-  const layerSliceBytes = layerSliceFloats * bytesPerFloat;
-  const layerSize = B * H * layerSliceBytes;
+
+  log(`Parsed: N=${N} B=${B} H=${H} L=${L} fp16=${isFp16} dataStart=${dataStart}`);
+
+  // Validate sizes
+  const boundsSize = B * N * 4;
+  const layerFloats = B * H * N * N;
+  const layerBytes = layerFloats * bpf;
+  const sliceFloats = N * N;
+  const sliceBytes = sliceFloats * bpf;
+  const expectedTotal = dataStart + boundsSize + L * layerBytes;
+
+  log(`Expected file size: ${expectedTotal}, actual: ${buf.byteLength}`);
+  if (buf.byteLength < expectedTotal) {
+    throw new Error(`File too small: expected ${expectedTotal} bytes, got ${buf.byteLength}. Data might be truncated.`);
+  }
+
+  if (!header.reaction_ids || header.reaction_ids.length !== N) {
+    throw new Error(`reaction_ids length (${header.reaction_ids ? header.reaction_ids.length : 'missing'}) != N (${N})`);
+  }
 
   S = {
-    buf, header, N, B, H, L, isFp16, bytesPerFloat,
+    buf, header, N, B, H, L, isFp16, bpf,
     ids: header.reaction_ids,
-    fullNames: header.full_names,
-    boundsOffset, boundsSize, layerSize, layerSliceBytes, layerSliceFloats,
-    dataStart,
+    fullNames: header.full_names || header.reaction_ids,
+    dataStart, boundsSize, layerBytes, sliceBytes, sliceFloats,
     fileName,
   };
 
-  // Precompute column X positions
-  const col0x = NAME_BLOCK_X + NAME_BLOCK_W + GUIDE_GAP;
+  // Layout
+  const col0x = NAME_X + NAME_W + GUIDE_GAP;
   S.colX = [];
-  for (let i = 0; i <= L; i++) S.colX.push(col0x + i * COL_SPACING);
+  for (let i = 0; i <= L; i++) S.colX.push(col0x + i * COL_SP);
   S.totalWidth = S.colX[L] + NODE_W + 30;
-
-  // Y positions
   S.yPos = [];
   for (let i = 0; i < N; i++) S.yPos.push(TOP_PAD + i * (NODE_H + GAP));
   S.svgHeight = TOP_PAD + N * (NODE_H + GAP) + BOT_PAD;
+  S.bandX = NAME_X;
+  S.bandW = S.colX[L] + NODE_W - NAME_X;
 
-  S.bandX = NAME_BLOCK_X;
-  S.bandW = S.colX[L] + NODE_W - NAME_BLOCK_X;
+  log(`Layout: totalWidth=${S.totalWidth} svgHeight=${S.svgHeight} cols=${S.colX.join(',')}`);
 
-  status.textContent = '';
+  // Switch screens
+  statusEl.textContent = '';
   document.getElementById('upload-screen').style.display = 'none';
   document.getElementById('viz-screen').style.display = 'block';
   document.getElementById('file-name').textContent = fileName;
   document.getElementById('dims-info').textContent =
-    `N=${N}  B=${B}  H=${H}  L=${L}  ${isFp16 ? 'fp16' : 'fp32'}`;
+    `N=${N}  B=${B}  H=${H}  L=${L}  ${isFp16?'fp16':'fp32'}`;
+  vizErrEl.style.display = 'none';
 
-  buildViz();
+  try {
+    buildViz();
+    log('buildViz() completed successfully');
+  } catch (err) {
+    showVizError('Render error: ' + err.message + '\n\n' + err.stack);
+  }
 }
 
 // ================================================================
-//  GET DATA SLICES (zero-copy views)
+//  DATA ACCESS (alignment-safe copies)
 // ================================================================
 function getBoundsSlice(batch) {
-  const off = S.boundsOffset + batch * S.N * 4;
-  return new Float32Array(S.buf, off, S.N);
+  const off = S.dataStart + batch * S.N * 4;
+  const src = new Uint8Array(S.buf, off, S.N * 4);
+  const dst = new Float32Array(S.N);
+  new Uint8Array(dst.buffer).set(src);
+  return dst;
 }
 
 function getAttentionSlice(layer, batch, head) {
-  const layerStart = S.dataStart + S.boundsSize + layer * S.layerSize;
-  const sliceOff = layerStart + (batch * S.H + head) * S.layerSliceBytes;
+  const layerStart = S.dataStart + S.boundsSize + layer * S.layerBytes;
+  const sliceOff = layerStart + (batch * S.H + head) * S.sliceBytes;
   if (S.isFp16) {
-    // Convert fp16 to fp32 on the fly
-    const u16 = new Uint16Array(S.buf, sliceOff, S.layerSliceFloats);
-    const f32 = new Float32Array(S.layerSliceFloats);
-    for (let i = 0; i < S.layerSliceFloats; i++) f32[i] = fp16to32(u16[i]);
+    const src = new Uint8Array(S.buf, sliceOff, S.sliceFloats * 2);
+    const u16buf = new Uint16Array(S.sliceFloats);
+    new Uint8Array(u16buf.buffer).set(src);
+    const f32 = new Float32Array(S.sliceFloats);
+    for (let i = 0; i < S.sliceFloats; i++) f32[i] = fp16to32(u16buf[i]);
     return f32;
   }
-  return new Float32Array(S.buf, sliceOff, S.layerSliceFloats);
+  const src = new Uint8Array(S.buf, sliceOff, S.sliceFloats * 4);
+  const f32 = new Float32Array(S.sliceFloats);
+  new Uint8Array(f32.buffer).set(src);
+  return f32;
 }
 
-// fp16 → fp32 conversion
 function fp16to32(h) {
-  const s = (h >> 15) & 1;
-  const e = (h >> 10) & 0x1F;
-  const m = h & 0x3FF;
-  if (e === 0) {
-    if (m === 0) return s ? -0 : 0;
-    let val = m / 1024;
-    return (s ? -1 : 1) * val * Math.pow(2, -14);
-  }
+  const s = (h >> 15) & 1, e = (h >> 10) & 0x1F, m = h & 0x3FF;
+  if (e === 0) { return m === 0 ? (s ? -0 : 0) : (s ? -1 : 1) * (m / 1024) * Math.pow(2, -14); }
   if (e === 31) return m ? NaN : (s ? -Infinity : Infinity);
   return (s ? -1 : 1) * Math.pow(2, e - 15) * (1 + m / 1024);
 }
 
 // ================================================================
-//  BUILD VISUALIZATION
+//  BUILD VIZ
 // ================================================================
-const ns = 'http://www.w3.org/2000/svg';
+const svgNS = 'http://www.w3.org/2000/svg';
 const svgEl = document.getElementById('viz-svg');
 const canvas = document.getElementById('thresh-canvas');
 const ctx = canvas.getContext('2d');
 const scrollEl = document.getElementById('scroll-container');
 const sizer = document.getElementById('content-sizer');
 
-let svgGroups = {};  // pinBand, hoverBand, conn, nodes
-let rowBand = null;
-let redRects = [];
+let svgG = {}, rowBand = null, redRects = [];
 let curBatch = 0, curHeads = [], curThreshFracs = [];
+let ttRect, ttText1, ttText2;
 
 function teardown() {
-  workers.forEach(w => w.terminate());
-  workers = [];
+  workers.forEach(w => w.terminate()); workers = [];
   chain = []; hlRects = []; segments = [];
   pinnedIdx = -1; pinnedRect = null; activeRowIdx = -1;
-  svgEl.innerHTML = '';
+  svgEl.innerHTML = ''; redRects = [];
   canvas.width = 0; canvas.height = 0;
   document.getElementById('controls').innerHTML = '';
+  debugEl.textContent = ''; debugEl.style.display = 'none';
+  vizErrEl.textContent = ''; vizErrEl.style.display = 'none';
   S = null; threshCache = [];
 }
 
 function buildViz() {
-  teardown();
   const {N, B, H, L, colX, totalWidth, svgHeight, bandX, bandW, yPos, ids, fullNames} = S;
+
+  log(`Sizing: sizer ${totalWidth}x${svgHeight}, canvas ${totalWidth}x${svgHeight}`);
 
   // Size containers
   sizer.style.width = totalWidth + 'px';
   sizer.style.height = svgHeight + 'px';
-  canvas.width = totalWidth;
-  canvas.height = svgHeight;
-  canvas.style.width = totalWidth + 'px';
-  canvas.style.height = svgHeight + 'px';
-  svgEl.setAttribute('width', totalWidth);
-  svgEl.setAttribute('height', svgHeight);
-  svgEl.style.width = totalWidth + 'px';
-  svgEl.style.height = svgHeight + 'px';
+  canvas.width = totalWidth; canvas.height = svgHeight;
+  canvas.style.width = totalWidth + 'px'; canvas.style.height = svgHeight + 'px';
+  svgEl.setAttribute('width', totalWidth); svgEl.setAttribute('height', svgHeight);
+  svgEl.style.width = totalWidth + 'px'; svgEl.style.height = svgHeight + 'px';
 
-  // CSS for node columns
-  let styleStr = '';
+  // CSS
+  let css = '';
   for (let c = 0; c <= L; c++) {
-    const [fill, stroke, hover] = PALETTE[c % PALETTE.length];
-    styleStr += `.ncol${c}{fill:${fill};stroke:${stroke};stroke-width:0.3;cursor:pointer;}`;
-    styleStr += `.ncol${c}:hover{fill:${hover};}`;
+    const [f, s, h] = PALETTE[c % PALETTE.length];
+    css += `.ncol${c}{fill:${f};stroke:${s};stroke-width:0.3;cursor:pointer;}.ncol${c}:hover{fill:${h};}`;
   }
-  styleStr += `.hl{fill:none;stroke:#ff69b4;stroke-width:2;pointer-events:none;rx:2;ry:2;}`;
-  styleStr += `.conn{stroke:#ff69b4;pointer-events:none;}`;
-  styleStr += `.vl{pointer-events:none;font-size:9px;fill:#ff69b4;font-weight:bold;font-family:'JetBrains Mono',monospace;}`;
-  styleStr += `.nbg{fill:#1a1a1a;rx:1;ry:1;}`;
-  styleStr += `.nred{fill:#cc2222;rx:1;ry:1;pointer-events:none;}`;
-  styleStr += `.nbar{fill:transparent;stroke:none;cursor:pointer;rx:1;ry:1;}`;
-  styleStr += `.nbar:hover{stroke:#ffcc00;stroke-width:1.2;}`;
-  styleStr += `.ntxt{fill:#fff;font-size:${Math.max(NODE_H-2,5)}px;font-family:'JetBrains Mono',monospace;pointer-events:none;}`;
-  styleStr += `.guide{stroke:#52525b;stroke-width:0.5;stroke-dasharray:2,2;pointer-events:none;}`;
-  styleStr += `.rowband{fill:#52525b;opacity:0.3;pointer-events:none;}`;
-  styleStr += `.pinband{fill:#c4a35a;opacity:0.35;pointer-events:none;}`;
-  styleStr += `.tt{pointer-events:none;}`;
+  css += `.hl{fill:none;stroke:#ff69b4;stroke-width:2;pointer-events:none;rx:2;ry:2;}`;
+  css += `.conn{stroke:#ff69b4;pointer-events:none;}`;
+  css += `.vl{pointer-events:none;font-size:9px;fill:#ff69b4;font-weight:bold;font-family:'JetBrains Mono',monospace;}`;
+  css += `.nbg{fill:#1a1a1a;rx:1;ry:1;}.nred{fill:#cc2222;rx:1;ry:1;pointer-events:none;}`;
+  css += `.nbar{fill:transparent;stroke:none;cursor:pointer;rx:1;ry:1;}.nbar:hover{stroke:#ffcc00;stroke-width:1.2;}`;
+  css += `.ntxt{fill:#fff;font-size:${Math.max(NODE_H-2,5)}px;font-family:'JetBrains Mono',monospace;pointer-events:none;}`;
+  css += `.guide{stroke:#52525b;stroke-width:0.5;stroke-dasharray:2,2;pointer-events:none;}`;
+  css += `.rowband{fill:#52525b;opacity:0.3;pointer-events:none;}`;
+  css += `.pinband{fill:#c4a35a;opacity:0.35;pointer-events:none;}`;
+  css += `.tt{pointer-events:none;}`;
+  const styleEl = document.createElementNS(svgNS, 'style');
+  styleEl.textContent = css; svgEl.appendChild(styleEl);
 
-  const styleEl = document.createElementNS(ns, 'style');
-  styleEl.textContent = styleStr;
-  svgEl.appendChild(styleEl);
+  log('SVG style injected');
 
-  // SVG groups (layering order)
-  svgGroups.pinBand = mkGroup();
-  svgGroups.hoverBand = mkGroup();
-  svgGroups.conn = mkGroup();
-  svgGroups.nodes = mkGroup();
+  // Groups (layering order)
+  svgG.pinBand = mg(); svgG.hoverBand = mg(); svgG.conn = mg(); svgG.nodes = mg();
 
-  // Hover band rect
-  rowBand = mkRect(bandX, 0, bandW, NODE_H, 'rowband');
+  // Hover band
+  rowBand = mr(bandX, 0, bandW, NODE_H, 'rowband');
   rowBand.setAttribute('visibility', 'hidden');
-  svgGroups.hoverBand.appendChild(rowBand);
+  svgG.hoverBand.appendChild(rowBand);
 
-  // Name bars + nodes
+  log(`Drawing ${N} name bars and ${(L+1)*N} node rects...`);
+
+  // Name bars
   redRects = [];
   for (let i = 0; i < N; i++) {
     const y = yPos[i];
-    svgGroups.nodes.appendChild(mkRect(NAME_BLOCK_X, y, NAME_BLOCK_W, NODE_H, 'nbg'));
+    svgG.nodes.appendChild(mr(NAME_X, y, NAME_W, NODE_H, 'nbg'));
+    const red = mr(NAME_X, y, 0, NODE_H, 'nred');
+    svgG.nodes.appendChild(red); redRects.push(red);
 
-    const red = mkRect(NAME_BLOCK_X, y, 0, NODE_H, 'nred');
-    svgGroups.nodes.appendChild(red);
-    redRects.push(red);
-
-    const txt = document.createElementNS(ns, 'text');
-    txt.setAttribute('x', NAME_BLOCK_X + 3); txt.setAttribute('y', y + NODE_H - 1.5);
+    const txt = document.createElementNS(svgNS, 'text');
+    txt.setAttribute('x', NAME_X + 3); txt.setAttribute('y', y + NODE_H - 1.5);
     txt.classList.add('ntxt'); txt.textContent = ids[i];
-    svgGroups.nodes.appendChild(txt);
+    svgG.nodes.appendChild(txt);
 
-    const hit = mkRect(NAME_BLOCK_X, y, NAME_BLOCK_W, NODE_H, 'nbar');
-    hit.dataset.nbar = i;
-    svgGroups.nodes.appendChild(hit);
+    const hit = mr(NAME_X, y, NAME_W, NODE_H, 'nbar');
+    hit.dataset.nbar = i; svgG.nodes.appendChild(hit);
 
-    const gl = document.createElementNS(ns, 'line');
-    gl.setAttribute('x1', NAME_BLOCK_X + NAME_BLOCK_W); gl.setAttribute('y1', cy(i));
-    gl.setAttribute('x2', colX[0]); gl.setAttribute('y2', cy(i));
-    gl.classList.add('guide');
-    svgGroups.nodes.appendChild(gl);
+    const gl = document.createElementNS(svgNS, 'line');
+    gl.setAttribute('x1', NAME_X + NAME_W); gl.setAttribute('y1', yc(i));
+    gl.setAttribute('x2', colX[0]); gl.setAttribute('y2', yc(i));
+    gl.classList.add('guide'); svgG.nodes.appendChild(gl);
   }
 
   // Node columns
   for (let col = 0; col <= L; col++) {
     for (let i = 0; i < N; i++) {
-      const r = mkRect(colX[col], yPos[i], NODE_W, NODE_H, 'ncol' + col);
+      const r = mr(colX[col], yPos[i], NODE_W, NODE_H, 'ncol' + col);
       r.setAttribute('rx', 1); r.setAttribute('ry', 1);
       r.dataset.col = col; r.dataset.idx = i;
-      svgGroups.nodes.appendChild(r);
+      svgG.nodes.appendChild(r);
     }
   }
 
-  // Tooltip elements
-  buildTooltip();
+  log(`SVG elements created: ~${4*N + (L+1)*N} rects`);
 
-  // ---- Controls ----
+  // Tooltip
+  ttRect = mr(0,0,0,0,'tt');
+  ttRect.setAttribute('rx',4); ttRect.setAttribute('ry',4);
+  ttRect.setAttribute('fill','#27272a'); ttRect.setAttribute('stroke','#3f3f46');
+  ttRect.setAttribute('stroke-width',0.8); ttRect.setAttribute('visibility','hidden');
+  svgEl.appendChild(ttRect);
+  ttText1 = document.createElementNS(svgNS,'text');
+  ttText1.classList.add('tt'); ttText1.setAttribute('font-size','11');
+  ttText1.setAttribute('fill','#e4e4e7');
+  ttText1.setAttribute('font-family',"'JetBrains Mono',monospace");
+  ttText1.setAttribute('visibility','hidden'); svgEl.appendChild(ttText1);
+  ttText2 = document.createElementNS(svgNS,'text');
+  ttText2.classList.add('tt'); ttText2.setAttribute('font-size','10');
+  ttText2.setAttribute('fill','#71717a');
+  ttText2.setAttribute('font-family',"'JetBrains Mono',monospace");
+  ttText2.setAttribute('visibility','hidden'); svgEl.appendChild(ttText2);
+
+  // Controls
   buildControls();
+  log('Controls built');
 
-  // ---- Workers ----
-  for (let l = 0; l < L; l++) {
-    const w = new Worker(workerUrl);
-    w.onmessage = onWorkerResult;
-    workers.push(w);
-  }
+  // Workers
   threshCache = new Array(L).fill(null);
+  if (workerUrl) {
+    try {
+      for (let l = 0; l < L; l++) {
+        const w = new Worker(workerUrl);
+        w.onmessage = onWorkerMsg;
+        w.onerror = (e) => { log('Worker error: ' + e.message); useWorkers = false; };
+        workers.push(w);
+      }
+      useWorkers = true;
+      log(`${L} workers created`);
+    } catch (e) {
+      log('Worker creation failed: ' + e.message + ', using fallback');
+      useWorkers = false;
+    }
+  } else {
+    useWorkers = false;
+    log('No worker URL, using main-thread fallback');
+  }
 
-  // Initial render
+  // Initial data render
+  log('Updating red fills...');
   updateRedFills();
-  requestAllThresholds();
+  log('Requesting threshold lines...');
+  requestAllThresh();
 
-  // ---- Events ----
+  // Events
   svgEl.addEventListener('click', onSvgClick);
-  svgEl.addEventListener('mousemove', onSvgMouseMove);
-  svgEl.addEventListener('mouseleave', () => { hideRowBand(); hideTooltip(); });
+  svgEl.addEventListener('mousemove', onSvgMove);
+  svgEl.addEventListener('mouseleave', () => { hideRowBand(); hideTT(); });
+
+  log('All done — visualization should be visible');
 }
+
+// SVG helpers
+function mg() { const g = document.createElementNS(svgNS,'g'); svgEl.appendChild(g); return g; }
+function mr(x,y,w,h,cls) {
+  const r = document.createElementNS(svgNS,'rect');
+  r.setAttribute('x',x); r.setAttribute('y',y);
+  r.setAttribute('width',w); r.setAttribute('height',h);
+  if (cls) r.classList.add(cls); return r;
+}
+function yc(i) { return S.yPos[i] + NODE_H / 2; }
+function debounce(fn, ms) { let t; return function(...a) { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), ms); }; }
 
 // ================================================================
 //  CONTROLS
 // ================================================================
 function buildControls() {
-  const {N, B, H, L, colX} = S;
+  const {N, B, H, L, colX, totalWidth} = S;
   const cDiv = document.getElementById('controls');
-  cDiv.style.width = S.totalWidth + 'px';
+  cDiv.style.width = totalWidth + 'px';
   cDiv.innerHTML = '';
 
   // Search
-  const searchWrap = document.createElement('div');
-  searchWrap.id = 'search-wrap';
-  searchWrap.innerHTML = `
-    <div style="position:relative;">
-      <input id="search-input" type="text" placeholder="Search reaction..." autocomplete="off">
-      <span id="search-clear">&times;</span>
-      <div id="dropdown"></div>
-    </div>`;
-  cDiv.appendChild(searchWrap);
+  const sw = document.createElement('div'); sw.id = 'search-wrap';
+  sw.innerHTML = `<div style="position:relative;">
+    <input id="search-input" type="text" placeholder="Search reaction..." autocomplete="off">
+    <span id="search-clear">&times;</span>
+    <div id="dropdown"></div></div>`;
+  cDiv.appendChild(sw);
 
-  // Batch slider
-  const batchBox = document.createElement('div');
-  batchBox.className = 'slider-box';
-  batchBox.style.cssText = `left:5px; top:26px; width:200px;`;
-  batchBox.innerHTML = `<div class="slider-row">
-    <span class="lbl">Batch</span>
+  // Batch
+  const bb = document.createElement('div'); bb.className = 'slider-box';
+  bb.style.cssText = 'left:5px;top:26px;width:200px;';
+  bb.innerHTML = `<div class="slider-row"><span class="lbl">Batch</span>
     <input type="range" id="sl-batch" min="0" max="${B-1}" value="0">
-    <span class="val" id="val-batch">0</span>
-  </div>`;
-  cDiv.appendChild(batchBox);
+    <span class="val" id="val-batch">0</span></div>`;
+  cDiv.appendChild(bb);
 
-  // Per-layer sliders
   curHeads = new Array(L).fill(0);
   curThreshFracs = new Array(L).fill(0.95);
   for (let l = 0; l < L; l++) {
-    const cx = (colX[l] + NODE_W + colX[l+1]) / 2;
-    const left = cx - SLIDER_GROUP_W / 2;
-    const box = document.createElement('div');
-    box.className = 'slider-box';
-    box.style.cssText = `left:${left}px; top:6px; width:${SLIDER_GROUP_W}px;`;
-    box.innerHTML = `
-      <div class="layer-title">Layer ${l}</div>
-      <div class="slider-row">
-        <span class="lbl">H</span>
-        <input type="range" id="sl-head-${l}" min="0" max="${H-1}" value="0" data-layer="${l}">
-        <span class="val" id="val-head-${l}">0</span>
-      </div>
-      <div class="slider-row">
-        <span class="lbl">T</span>
-        <input type="range" id="sl-thresh-${l}" min="0" max="1000" value="950" data-layer="${l}">
-        <span class="val" id="val-thresh-${l}" style="min-width:52px;font-size:9px;"></span>
-      </div>`;
+    const cx = (colX[l]+NODE_W+colX[l+1])/2;
+    const box = document.createElement('div'); box.className = 'slider-box';
+    box.style.cssText = `left:${cx-SL_W/2}px;top:6px;width:${SL_W}px;`;
+    box.innerHTML = `<div class="layer-title">Layer ${l}</div>
+      <div class="slider-row"><span class="lbl">H</span>
+        <input type="range" id="sl-head-${l}" min="0" max="${H-1}" value="0">
+        <span class="val" id="val-head-${l}">0</span></div>
+      <div class="slider-row"><span class="lbl">T</span>
+        <input type="range" id="sl-thresh-${l}" min="0" max="1000" value="950">
+        <span class="val" id="val-thresh-${l}" style="min-width:52px;font-size:9px;"></span></div>`;
     cDiv.appendChild(box);
   }
 
-  // Wire sliders with debounce
-  const batchSl = document.getElementById('sl-batch');
-  batchSl.addEventListener('input', debounce(() => {
-    curBatch = parseInt(batchSl.value);
+  // Wire sliders
+  document.getElementById('sl-batch').addEventListener('input', debounce(function() {
+    curBatch = parseInt(this.value);
     document.getElementById('val-batch').textContent = curBatch;
-    updateRedFills();
-    requestAllThresholds();
-    redrawAllSegments();
+    updateRedFills(); requestAllThresh(); redrawAllSeg();
   }, 30));
 
   for (let l = 0; l < L; l++) {
-    const hs = document.getElementById('sl-head-' + l);
-    const ts = document.getElementById('sl-thresh-' + l);
-    ((layer) => {
-      hs.addEventListener('input', debounce(() => {
-        curHeads[layer] = parseInt(hs.value);
-        document.getElementById('val-head-' + layer).textContent = curHeads[layer];
-        requestThreshold(layer);
-        redrawSegmentsForLayer(layer);
+    ((ly) => {
+      document.getElementById('sl-head-'+ly).addEventListener('input', debounce(function() {
+        curHeads[ly] = parseInt(this.value);
+        document.getElementById('val-head-'+ly).textContent = curHeads[ly];
+        requestThresh(ly); redrawSegForLayer(ly);
       }, 30));
-      ts.addEventListener('input', debounce(() => {
-        curThreshFracs[layer] = parseInt(ts.value) / 1000;
-        requestThreshold(layer);
+      document.getElementById('sl-thresh-'+ly).addEventListener('input', debounce(function() {
+        curThreshFracs[ly] = parseInt(this.value) / 1000;
+        requestThresh(ly);
       }, 30));
     })(l);
   }
-
-  // Wire search
   wireSearch();
 }
 
 // ================================================================
-//  THRESHOLD (Canvas via WebWorker)
+//  THRESHOLD (Worker + main-thread fallback)
 // ================================================================
-function requestThreshold(layer) {
-  const slice = getAttentionSlice(layer, curBatch, curHeads[layer]);
-  // For fp32 views into shared buffer, we need to copy for transfer
-  const copy = new Float32Array(slice);
-  workers[layer].postMessage({
-    matrix: copy, N: S.N,
-    threshFrac: curThreshFracs[layer],
-    maxLines: MAX_TL, layer
-  }, [copy.buffer]);
+function computeThreshMain(layer) {
+  const matrix = getAttentionSlice(layer, curBatch, curHeads[layer]);
+  const N = S.N;
+  let mn = Infinity, mx = -Infinity;
+  for (let i = 0; i < N * N; i++) { const v = Math.abs(matrix[i]); if (v < mn) mn = v; if (v > mx) mx = v; }
+  const thresh = mn + curThreshFracs[layer] * (mx - mn);
+  const entries = [];
+  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+    const v = Math.abs(matrix[r * N + c]);
+    if (v >= thresh) entries.push({r, c, v});
+  }
+  entries.sort((a, b) => b.v - a.v);
+  const limit = Math.min(entries.length, MAX_TL);
+  const range = mx - thresh;
+  const result = new Float32Array(limit * 3);
+  for (let i = 0; i < limit; i++) {
+    let alpha = 0.08;
+    if (range > 0) alpha = 0.05 + ((entries[i].v - thresh) / range) * 0.45;
+    result[i*3] = entries[i].r;
+    result[i*3+1] = entries[i].c;
+    result[i*3+2] = alpha;
+  }
+  threshCache[layer] = {result, count: limit};
+  const v = document.getElementById('val-thresh-' + layer);
+  if (v) v.textContent = thresh.toExponential(2);
+  drawCanvas();
 }
 
-function requestAllThresholds() {
-  for (let l = 0; l < S.L; l++) requestThreshold(l);
+function requestThresh(l) {
+  if (useWorkers && workers[l]) {
+    const sl = getAttentionSlice(l, curBatch, curHeads[l]);
+    workers[l].postMessage({matrix: sl, N: S.N, threshFrac: curThreshFracs[l], maxLines: MAX_TL, layer: l}, [sl.buffer]);
+  } else {
+    computeThreshMain(l);
+  }
 }
+function requestAllThresh() { for (let l = 0; l < S.L; l++) requestThresh(l); }
 
-function onWorkerResult(e) {
+function onWorkerMsg(e) {
   const {result, layer, thresh, count} = e.data;
   threshCache[layer] = {result: new Float32Array(result), count};
-  // Update threshold display
-  const valEl = document.getElementById('val-thresh-' + layer);
-  if (valEl) valEl.textContent = thresh.toExponential(2);
+  const v = document.getElementById('val-thresh-' + layer);
+  if (v) v.textContent = thresh.toExponential(2);
   drawCanvas();
 }
 
 function drawCanvas() {
-  const {L, N, colX, yPos} = S;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  for (let l = 0; l < L; l++) {
-    const tc = threshCache[l];
-    if (!tc) continue;
+  for (let l = 0; l < S.L; l++) {
+    const tc = threshCache[l]; if (!tc) continue;
     const {result, count} = tc;
-    const x1 = colX[l] + NODE_W;
-    const x2 = colX[l + 1];
-
-    ctx.strokeStyle = '#888';
-    ctx.lineWidth = 0.8;
-
+    const x1 = S.colX[l] + NODE_W, x2 = S.colX[l + 1];
+    ctx.strokeStyle = '#888'; ctx.lineWidth = 0.8;
     for (let i = 0; i < count; i++) {
-      const r = result[i * 3];
-      const c = result[i * 3 + 1];
-      const alpha = result[i * 3 + 2];
-      ctx.globalAlpha = alpha;
+      ctx.globalAlpha = result[i*3+2];
       ctx.beginPath();
-      ctx.moveTo(x1, yPos[r] + NODE_H / 2);
-      ctx.lineTo(x2, yPos[c] + NODE_H / 2);
+      ctx.moveTo(x1, S.yPos[result[i*3]] + NODE_H/2);
+      ctx.lineTo(x2, S.yPos[result[i*3+1]] + NODE_H/2);
       ctx.stroke();
     }
   }
   ctx.globalAlpha = 1;
-}
-
-// ================================================================
-//  SVG HELPERS
-// ================================================================
-function mkGroup() {
-  const g = document.createElementNS(ns, 'g');
-  svgEl.appendChild(g);
-  return g;
-}
-function mkRect(x, y, w, h, cls) {
-  const r = document.createElementNS(ns, 'rect');
-  r.setAttribute('x', x); r.setAttribute('y', y);
-  r.setAttribute('width', w); r.setAttribute('height', h);
-  if (cls) r.classList.add(cls);
-  return r;
-}
-function cy(i) { return S.yPos[i] + NODE_H / 2; }
-
-function debounce(fn, ms) {
-  let t;
-  return function(...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), ms); };
 }
 
 // ================================================================
@@ -698,356 +728,149 @@ function updateRedFills() {
   let mx = -Infinity;
   for (let i = 0; i < S.N; i++) { const a = Math.abs(bv[i]); if (a > mx) mx = a; }
   if (mx <= 0) mx = 1;
-  for (let i = 0; i < S.N; i++) {
-    redRects[i].setAttribute('width', (Math.abs(bv[i]) / mx) * NAME_BLOCK_W);
-  }
+  for (let i = 0; i < S.N; i++) redRects[i].setAttribute('width', (Math.abs(bv[i])/mx)*NAME_W);
 }
 
 // ================================================================
-//  HOVER BAND
+//  HOVER / PIN
 // ================================================================
-function showRowBand(idx) {
-  if (idx === activeRowIdx) return;
-  activeRowIdx = idx;
-  rowBand.setAttribute('y', S.yPos[idx]);
-  rowBand.setAttribute('visibility', 'visible');
-}
-function hideRowBand() {
-  if (activeRowIdx < 0) return;
-  activeRowIdx = -1;
-  rowBand.setAttribute('visibility', 'hidden');
-}
+function showRowBand(i) { if(i===activeRowIdx)return; activeRowIdx=i; rowBand.setAttribute('y',S.yPos[i]); rowBand.setAttribute('visibility','visible'); }
+function hideRowBand() { if(activeRowIdx<0)return; activeRowIdx=-1; rowBand.setAttribute('visibility','hidden'); }
 
-// ================================================================
-//  PIN BAND (search / click)
-// ================================================================
-function pinRow(idx) {
-  unpinRow();
-  pinnedIdx = idx;
-  pinnedRect = mkRect(S.bandX, S.yPos[idx], S.bandW, NODE_H, 'pinband');
-  svgGroups.pinBand.appendChild(pinnedRect);
-  // Sync search
-  document.getElementById('search-input').value = S.ids[idx];
+function pinRow(i) {
+  unpinRow(); pinnedIdx=i;
+  pinnedRect = mr(S.bandX, S.yPos[i], S.bandW, NODE_H, 'pinband');
+  svgG.pinBand.appendChild(pinnedRect);
+  document.getElementById('search-input').value = S.ids[i];
   document.getElementById('search-clear').style.display = 'inline';
 }
-function unpinRow() {
-  if (pinnedRect) { pinnedRect.remove(); pinnedRect = null; }
-  pinnedIdx = -1;
-}
+function unpinRow() { if(pinnedRect){pinnedRect.remove();pinnedRect=null;} pinnedIdx=-1; }
 
 // ================================================================
 //  TOOLTIP
 // ================================================================
-let ttRect, ttText1, ttText2;
-function buildTooltip() {
-  ttRect = mkRect(0, 0, 0, 0, 'tt');
-  ttRect.setAttribute('rx', 4); ttRect.setAttribute('ry', 4);
-  ttRect.setAttribute('fill', '#27272a'); ttRect.setAttribute('stroke', '#3f3f46');
-  ttRect.setAttribute('stroke-width', 0.8); ttRect.setAttribute('visibility', 'hidden');
-  svgEl.appendChild(ttRect);
-
-  ttText1 = document.createElementNS(ns, 'text');
-  ttText1.classList.add('tt');
-  ttText1.setAttribute('font-size', '11'); ttText1.setAttribute('fill', '#e4e4e7');
-  ttText1.setAttribute('font-family', "'JetBrains Mono', monospace");
-  ttText1.setAttribute('visibility', 'hidden');
-  svgEl.appendChild(ttText1);
-
-  ttText2 = document.createElementNS(ns, 'text');
-  ttText2.classList.add('tt');
-  ttText2.setAttribute('font-size', '10'); ttText2.setAttribute('fill', '#71717a');
-  ttText2.setAttribute('font-family', "'JetBrains Mono', monospace");
-  ttText2.setAttribute('visibility', 'hidden');
-  svgEl.appendChild(ttText2);
+function showTT(x,y,l1,l2) {
+  ttText1.setAttribute('x',x); ttText1.setAttribute('y',y);
+  ttText1.setAttribute('text-anchor','start');
+  ttText1.textContent=l1; ttText1.setAttribute('visibility','visible');
+  if(l2){ttText2.setAttribute('x',x);ttText2.setAttribute('y',y+13);
+    ttText2.setAttribute('text-anchor','start');ttText2.textContent=l2;ttText2.setAttribute('visibility','visible');
+  } else ttText2.setAttribute('visibility','hidden');
+  const b1=ttText1.getBBox();
+  let bx=b1.x,by=b1.y,bw=b1.width,bh=b1.height;
+  if(l2){const b2=ttText2.getBBox();bx=Math.min(bx,b2.x);by=Math.min(by,b2.y);bw=Math.max(b1.x+b1.width,b2.x+b2.width)-bx;bh=(b2.y+b2.height)-by;}
+  ttRect.setAttribute('x',bx-5);ttRect.setAttribute('y',by-3);
+  ttRect.setAttribute('width',bw+10);ttRect.setAttribute('height',bh+6);
+  ttRect.setAttribute('visibility','visible');
 }
-
-function showTooltip(x, y, line1, line2) {
-  ttText1.setAttribute('x', x); ttText1.setAttribute('y', y);
-  ttText1.setAttribute('text-anchor', 'start');
-  ttText1.textContent = line1; ttText1.setAttribute('visibility', 'visible');
-  if (line2) {
-    ttText2.setAttribute('x', x); ttText2.setAttribute('y', y + 13);
-    ttText2.setAttribute('text-anchor', 'start');
-    ttText2.textContent = line2; ttText2.setAttribute('visibility', 'visible');
-  } else { ttText2.setAttribute('visibility', 'hidden'); }
-  const b1 = ttText1.getBBox();
-  let bx = b1.x, by = b1.y, bw = b1.width, bh = b1.height;
-  if (line2) {
-    const b2 = ttText2.getBBox();
-    bx = Math.min(bx, b2.x); by = Math.min(by, b2.y);
-    bw = Math.max(b1.x+b1.width, b2.x+b2.width) - bx;
-    bh = (b2.y+b2.height) - by;
-  }
-  ttRect.setAttribute('x', bx-5); ttRect.setAttribute('y', by-3);
-  ttRect.setAttribute('width', bw+10); ttRect.setAttribute('height', bh+6);
-  ttRect.setAttribute('visibility', 'visible');
-}
-function hideTooltip() {
-  ttText1.setAttribute('visibility', 'hidden');
-  ttText2.setAttribute('visibility', 'hidden');
-  ttRect.setAttribute('visibility', 'hidden');
-}
+function hideTT() { ttText1.setAttribute('visibility','hidden');ttText2.setAttribute('visibility','hidden');ttRect.setAttribute('visibility','hidden'); }
 
 // ================================================================
-//  CHAIN SELECTION
+//  CHAIN
 // ================================================================
-function clearChain() {
-  hlRects.forEach(r => r.remove());
-  segments.forEach(s => s.forEach(a => a.remove()));
-  hlRects = []; segments = []; chain = [];
+function clearChain() { hlRects.forEach(r=>r.remove()); segments.forEach(s=>s.forEach(a=>a.remove())); hlRects=[]; segments=[]; chain=[]; }
+
+function makeHL(col,idx) {
+  const p=3,r=mr(S.colX[col]-p,S.yPos[idx]-p,NODE_W+p*2,NODE_H+p*2,'hl');
+  svgEl.appendChild(r); return r;
 }
 
-function makeHL(col, idx) {
-  const pad = 3;
-  const r = mkRect(S.colX[col]-pad, S.yPos[idx]-pad, NODE_W+pad*2, NODE_H+pad*2, 'hl');
-  svgEl.appendChild(r);
-  return r;
-}
-
-function getMatrixForChain(layerIdx) {
-  const slice = getAttentionSlice(layerIdx, curBatch, curHeads[layerIdx]);
-  return slice;
-}
-
-function makeSegment(keyCol, keyIdx, queryIdx) {
-  const l = keyCol;
-  const m = getMatrixForChain(l);
-  const val = m[keyIdx * S.N + queryIdx];
-
-  let rmin = Infinity, rmax = -Infinity;
-  for (let c = 0; c < S.N; c++) {
-    const v = Math.abs(m[keyIdx * S.N + c]);
-    if (v < rmin) rmin = v; if (v > rmax) rmax = v;
-  }
-  let normed = 0.5;
-  if (rmax > rmin) normed = (Math.abs(val)-rmin)/(rmax-rmin);
-  const lw = 0.3 + normed * 7.7;
-  const alpha = 0.2 + normed * 0.45;
-  const arts = [];
-
-  const line = document.createElementNS(ns, 'line');
-  line.setAttribute('x1', S.colX[l]+NODE_W); line.setAttribute('y1', cy(keyIdx));
-  line.setAttribute('x2', S.colX[l+1]); line.setAttribute('y2', cy(queryIdx));
-  line.setAttribute('stroke-width', lw); line.setAttribute('stroke-opacity', alpha);
-  line.classList.add('conn');
-  svgGroups.conn.appendChild(line); arts.push(line);
-
-  const midx = (S.colX[l]+NODE_W+S.colX[l+1])/2;
-  const midy = (cy(keyIdx)+cy(queryIdx))/2;
-  const lbl = document.createElementNS(ns, 'text');
-  lbl.setAttribute('x', midx); lbl.setAttribute('y', midy-4);
-  lbl.setAttribute('text-anchor', 'middle');
-  lbl.classList.add('vl');
-  lbl.textContent = val.toExponential(3);
-  svgEl.appendChild(lbl); arts.push(lbl);
+function makeSeg(kc,ki,qi) {
+  const m=getAttentionSlice(kc,curBatch,curHeads[kc]);
+  const val=m[ki*S.N+qi];
+  let rn=Infinity,rx=-Infinity;
+  for(let c=0;c<S.N;c++){const v=Math.abs(m[ki*S.N+c]);if(v<rn)rn=v;if(v>rx)rx=v;}
+  let nm=0.5;if(rx>rn)nm=(Math.abs(val)-rn)/(rx-rn);
+  const lw=0.3+nm*7.7,al=0.2+nm*0.45,arts=[];
+  const line=document.createElementNS(svgNS,'line');
+  line.setAttribute('x1',S.colX[kc]+NODE_W);line.setAttribute('y1',yc(ki));
+  line.setAttribute('x2',S.colX[kc+1]);line.setAttribute('y2',yc(qi));
+  line.setAttribute('stroke-width',lw);line.setAttribute('stroke-opacity',al);
+  line.classList.add('conn');svgG.conn.appendChild(line);arts.push(line);
+  const midx=(S.colX[kc]+NODE_W+S.colX[kc+1])/2,midy=(yc(ki)+yc(qi))/2;
+  const lbl=document.createElementNS(svgNS,'text');
+  lbl.setAttribute('x',midx);lbl.setAttribute('y',midy-4);
+  lbl.setAttribute('text-anchor','middle');lbl.classList.add('vl');
+  lbl.textContent=val.toExponential(3);svgEl.appendChild(lbl);arts.push(lbl);
   return arts;
 }
 
-function redrawSegmentAt(i) {
-  if (i < 0 || i >= segments.length) return;
-  segments[i].forEach(a => a.remove());
-  segments[i] = makeSegment(chain[i].col, chain[i].idx, chain[i+1].idx);
-}
-
-function redrawAllSegments() {
-  for (let i = 0; i < segments.length; i++) {
-    segments[i].forEach(a => a.remove());
-    segments[i] = makeSegment(chain[i].col, chain[i].idx, chain[i+1].idx);
-  }
-}
-
-function redrawSegmentsForLayer(l) {
-  for (let i = 0; i < segments.length; i++) {
-    if (chain[i].col === l) redrawSegmentAt(i);
-  }
-}
-
-function extend(col, idx) {
-  const prev = chain[chain.length-1];
-  chain.push({col, idx});
-  hlRects.push(makeHL(col, idx));
-  segments.push(makeSegment(prev.col, prev.idx, idx));
-}
-
-function truncateFrom(pos) {
-  while (hlRects.length > pos) hlRects.pop().remove();
-  const segCut = Math.max(0, pos-1);
-  while (segments.length > segCut) segments.pop().forEach(a => a.remove());
-  chain.length = pos;
-}
-
-function replaceAt(pos, col, idx) {
-  hlRects[pos].remove();
-  hlRects[pos] = makeHL(col, idx);
-  if (pos > 0) {
-    segments[pos-1].forEach(a => a.remove());
-    segments[pos-1] = makeSegment(chain[pos-1].col, chain[pos-1].idx, idx);
-  }
-  if (pos < chain.length-1) {
-    segments[pos].forEach(a => a.remove());
-    segments[pos] = makeSegment(col, idx, chain[pos+1].idx);
-  }
-  chain[pos] = {col, idx};
+function redrawAllSeg() { for(let i=0;i<segments.length;i++){segments[i].forEach(a=>a.remove());segments[i]=makeSeg(chain[i].col,chain[i].idx,chain[i+1].idx);} }
+function redrawSegForLayer(l) { for(let i=0;i<segments.length;i++)if(chain[i].col===l){segments[i].forEach(a=>a.remove());segments[i]=makeSeg(chain[i].col,chain[i].idx,chain[i+1].idx);} }
+function extend(col,idx) { const p=chain[chain.length-1];chain.push({col,idx});hlRects.push(makeHL(col,idx));segments.push(makeSeg(p.col,p.idx,idx)); }
+function truncFrom(pos) { while(hlRects.length>pos)hlRects.pop().remove();const sc=Math.max(0,pos-1);while(segments.length>sc)segments.pop().forEach(a=>a.remove());chain.length=pos; }
+function replaceAt(pos,col,idx) {
+  hlRects[pos].remove();hlRects[pos]=makeHL(col,idx);
+  if(pos>0){segments[pos-1].forEach(a=>a.remove());segments[pos-1]=makeSeg(chain[pos-1].col,chain[pos-1].idx,idx);}
+  if(pos<chain.length-1){segments[pos].forEach(a=>a.remove());segments[pos]=makeSeg(col,idx,chain[pos+1].idx);}
+  chain[pos]={col,idx};
 }
 
 // ================================================================
-//  SVG EVENT HANDLERS
+//  SVG EVENTS
 // ================================================================
 function onSvgClick(e) {
-  const t = e.target;
-
-  // Name bar click
-  if (t.dataset && t.dataset.nbar !== undefined) {
-    const idx = parseInt(t.dataset.nbar);
-    if (pinnedIdx === idx) {
-      unpinRow();
-      document.getElementById('search-input').value = '';
-      document.getElementById('search-clear').style.display = 'none';
-    } else {
-      pinRow(idx);
-    }
+  const t=e.target;
+  if(t.dataset&&t.dataset.nbar!==undefined){
+    const i=parseInt(t.dataset.nbar);
+    if(pinnedIdx===i){unpinRow();document.getElementById('search-input').value='';document.getElementById('search-clear').style.display='none';}
+    else pinRow(i);
     return;
   }
-
-  // Node click
-  if (!t.dataset || t.dataset.col === undefined) return;
-  const col = parseInt(t.dataset.col);
-  const idx = parseInt(t.dataset.idx);
-
-  if (chain.length === 0) {
-    chain.push({col, idx}); hlRects.push(makeHL(col, idx)); return;
-  }
-  const startCol = chain[0].col;
-  const pos = col - startCol;
-
-  if (pos === chain.length && chain[chain.length-1].col < S.L) {
-    extend(col, idx); return;
-  }
-  if (pos >= 0 && pos < chain.length) {
-    if (chain[pos].idx === idx) truncateFrom(pos);
-    else replaceAt(pos, col, idx);
-    return;
-  }
-  clearChain();
-  chain.push({col, idx}); hlRects.push(makeHL(col, idx));
+  if(!t.dataset||t.dataset.col===undefined)return;
+  const col=parseInt(t.dataset.col),idx=parseInt(t.dataset.idx);
+  if(!chain.length){chain.push({col,idx});hlRects.push(makeHL(col,idx));return;}
+  const pos=col-chain[0].col;
+  if(pos===chain.length&&chain[chain.length-1].col<S.L){extend(col,idx);return;}
+  if(pos>=0&&pos<chain.length){if(chain[pos].idx===idx)truncFrom(pos);else replaceAt(pos,col,idx);return;}
+  clearChain();chain.push({col,idx});hlRects.push(makeHL(col,idx));
 }
 
-function onSvgMouseMove(e) {
-  const t = e.target;
-  if (t.dataset && t.dataset.nbar !== undefined) {
-    const idx = parseInt(t.dataset.nbar);
-    showRowBand(idx);
-    const bv = getBoundsSlice(curBatch);
-    showTooltip(
-      NAME_BLOCK_X + NAME_BLOCK_W + 8,
-      S.yPos[idx] + NODE_H/2,
-      S.fullNames[idx],
-      'Bound: ' + bv[idx].toExponential(3)
-    );
+function onSvgMove(e) {
+  const t=e.target;
+  if(t.dataset&&t.dataset.nbar!==undefined){
+    const i=parseInt(t.dataset.nbar);showRowBand(i);
+    const bv=getBoundsSlice(curBatch);
+    showTT(NAME_X+NAME_W+8,S.yPos[i]+NODE_H/2,S.fullNames[i],'Bound: '+bv[i].toExponential(3));
     return;
   }
-  if (t.dataset && t.dataset.col !== undefined) {
-    const idx = parseInt(t.dataset.idx);
-    showRowBand(idx);
-    const rx = parseFloat(t.getAttribute('x'));
-    const ry = parseFloat(t.getAttribute('y'));
-    showTooltip(rx + NODE_W + 8, ry + NODE_H/2 + 4, S.fullNames[idx], null);
+  if(t.dataset&&t.dataset.col!==undefined){
+    const i=parseInt(t.dataset.idx);showRowBand(i);
+    showTT(parseFloat(t.getAttribute('x'))+NODE_W+8,parseFloat(t.getAttribute('y'))+NODE_H/2+4,S.fullNames[i],null);
     return;
   }
-  hideRowBand(); hideTooltip();
+  hideRowBand();hideTT();
 }
 
 // ================================================================
-//  SEARCH BAR
+//  SEARCH
 // ================================================================
 function wireSearch() {
-  const input = document.getElementById('search-input');
-  const dd = document.getElementById('dropdown');
-  const clearBtn = document.getElementById('search-clear');
-  const idsL = S.ids.map(s => s.toLowerCase());
-  const namesL = S.fullNames.map(s => s.toLowerCase());
-
-  function getMatches(q) {
-    if (!q) return [];
-    q = q.toLowerCase();
-    const scored = [];
-    for (let i = 0; i < S.N; i++) {
-      let sc = -1;
-      if (idsL[i].startsWith(q)) sc = 3;
-      else if (idsL[i].includes(q)) sc = 2;
-      else if (namesL[i].includes(q)) sc = 1;
-      if (sc > 0) scored.push({idx:i, sc});
-    }
-    scored.sort((a,b) => b.sc-a.sc || a.idx-b.idx);
-    return scored.slice(0, 12);
+  const inp=document.getElementById('search-input'),dd=document.getElementById('dropdown'),clr=document.getElementById('search-clear');
+  const idL=S.ids.map(s=>s.toLowerCase()),nmL=S.fullNames.map(s=>s.toLowerCase());
+  function match(q){if(!q)return[];q=q.toLowerCase();
+    const sc=[];for(let i=0;i<S.N;i++){let s=-1;if(idL[i].startsWith(q))s=3;else if(idL[i].includes(q))s=2;else if(nmL[i].includes(q))s=1;if(s>0)sc.push({idx:i,s});}
+    sc.sort((a,b)=>b.s-a.s||a.idx-b.idx);return sc.slice(0,12);
   }
-
-  function renderDD(matches) {
-    dd.innerHTML = '';
-    if (!matches.length) { dd.style.display = 'none'; return; }
-    dd.style.display = 'block';
-    for (const m of matches) {
-      const div = document.createElement('div');
-      div.className = 'dd-item';
-      div.innerHTML = `<b>${S.ids[m.idx]}</b><span class="fullname">${S.fullNames[m.idx]}</span>`;
-      div.dataset.idx = m.idx;
-      div.addEventListener('mousedown', ev => {
-        ev.preventDefault();
-        selectResult(parseInt(div.dataset.idx));
-      });
-      dd.appendChild(div);
-    }
+  function renderDD(ms){dd.innerHTML='';if(!ms.length){dd.style.display='none';return;}dd.style.display='block';
+    for(const m of ms){const d=document.createElement('div');d.className='dd-item';
+      d.innerHTML=`<b>${S.ids[m.idx]}</b><span class="fullname">${S.fullNames[m.idx]}</span>`;
+      d.dataset.idx=m.idx;d.addEventListener('mousedown',ev=>{ev.preventDefault();sel(parseInt(d.dataset.idx));});dd.appendChild(d);}
   }
-
-  function selectResult(idx) {
-    dd.style.display = 'none';
-    pinRow(idx);
-    const rowTop = S.yPos[idx];
-    scrollEl.scrollTop = Math.max(0, rowTop - scrollEl.clientHeight/2 + NODE_H/2);
-  }
-
-  function clearSearch() {
-    input.value = ''; dd.style.display = 'none';
-    clearBtn.style.display = 'none'; unpinRow();
-  }
-
-  input.addEventListener('input', () => {
-    const q = input.value.trim();
-    clearBtn.style.display = q ? 'inline' : 'none';
-    if (!q) unpinRow();
-    renderDD(getMatches(q));
+  function sel(i){dd.style.display='none';pinRow(i);scrollEl.scrollTop=Math.max(0,S.yPos[i]-scrollEl.clientHeight/2+NODE_H/2);}
+  function clrS(){inp.value='';dd.style.display='none';clr.style.display='none';unpinRow();}
+  inp.addEventListener('input',()=>{const q=inp.value.trim();clr.style.display=q?'inline':'none';if(!q)unpinRow();renderDD(match(q));});
+  inp.addEventListener('focus',()=>{const q=inp.value.trim();if(q)renderDD(match(q));});
+  inp.addEventListener('blur',()=>setTimeout(()=>{dd.style.display='none';},150));
+  inp.addEventListener('keydown',ev=>{
+    const its=dd.querySelectorAll('.dd-item');if(!its.length)return;
+    let ai=-1;its.forEach((it,i)=>{if(it.classList.contains('kb-active'))ai=i;});
+    if(ev.key==='ArrowDown'){ev.preventDefault();if(ai>=0)its[ai].classList.remove('kb-active');ai=(ai+1)%its.length;its[ai].classList.add('kb-active');}
+    else if(ev.key==='ArrowUp'){ev.preventDefault();if(ai>=0)its[ai].classList.remove('kb-active');ai=ai<=0?its.length-1:ai-1;its[ai].classList.add('kb-active');}
+    else if(ev.key==='Enter'){ev.preventDefault();if(ai>=0)sel(parseInt(its[ai].dataset.idx));else if(its.length)sel(parseInt(its[0].dataset.idx));}
+    else if(ev.key==='Escape'){dd.style.display='none';inp.blur();}
   });
-  input.addEventListener('focus', () => {
-    const q = input.value.trim();
-    if (q) renderDD(getMatches(q));
-  });
-  input.addEventListener('blur', () => {
-    setTimeout(() => { dd.style.display = 'none'; }, 150);
-  });
-  input.addEventListener('keydown', ev => {
-    const items = dd.querySelectorAll('.dd-item');
-    if (!items.length) return;
-    let ai = -1;
-    items.forEach((it,i) => { if (it.classList.contains('kb-active')) ai = i; });
-    if (ev.key === 'ArrowDown') {
-      ev.preventDefault();
-      if (ai >= 0) items[ai].classList.remove('kb-active');
-      ai = (ai+1) % items.length;
-      items[ai].classList.add('kb-active');
-    } else if (ev.key === 'ArrowUp') {
-      ev.preventDefault();
-      if (ai >= 0) items[ai].classList.remove('kb-active');
-      ai = ai <= 0 ? items.length-1 : ai-1;
-      items[ai].classList.add('kb-active');
-    } else if (ev.key === 'Enter') {
-      ev.preventDefault();
-      if (ai >= 0) selectResult(parseInt(items[ai].dataset.idx));
-      else if (items.length) selectResult(parseInt(items[0].dataset.idx));
-    } else if (ev.key === 'Escape') {
-      dd.style.display = 'none'; input.blur();
-    }
-  });
-  clearBtn.addEventListener('click', clearSearch);
+  clr.addEventListener('click',clrS);
 }
 </script>
 </body>
