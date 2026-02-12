@@ -9,7 +9,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'DM Sans', sans-serif;
-    background: #0e0e12; color: #d4d4d8; min-height: 100vh;
+    background: #eaedf1; color: #2d2d30; min-height: 100vh;
   }
 
   /* Upload screen */
@@ -17,63 +17,55 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     min-height: 100vh; gap: 24px; padding: 40px;
   }
-  #upload-screen h1 { font-size: 28px; font-weight: 600; color: #e4e4e7; letter-spacing: -0.5px; }
-  #upload-screen p.subtitle { color: #71717a; font-size: 14px; max-width: 480px; text-align: center; line-height: 1.6; }
+  #upload-screen h1 { font-size: 28px; font-weight: 600; color: #1a1a1e; letter-spacing: -0.5px; }
+  #upload-screen p.subtitle { color: #6b6b76; font-size: 14px; max-width: 480px; text-align: center; line-height: 1.6; }
   #drop-zone {
     width: 480px; max-width: 90vw; padding: 48px 32px;
-    border: 2px dashed #27272a; border-radius: 12px;
-    text-align: center; cursor: pointer; transition: all 0.2s; background: #18181b;
+    border: 2px dashed #b8bcc4; border-radius: 12px;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: #f5f6f8;
   }
-  #drop-zone:hover, #drop-zone.dragover { border-color: #2a9d8f; background: #1a2520; }
+  #drop-zone:hover, #drop-zone.dragover { border-color: #2a9d8f; background: #eaf5f3; }
   #drop-zone .icon { font-size: 36px; margin-bottom: 12px; }
-  #drop-zone .main-text { font-size: 15px; color: #a1a1aa; }
-  #drop-zone .sub-text { font-size: 12px; color: #52525b; margin-top: 8px; }
+  #drop-zone .main-text { font-size: 15px; color: #555; }
+  #drop-zone .sub-text { font-size: 12px; color: #999; margin-top: 8px; }
   #file-input { display: none; }
   .status-msg { font-size: 13px; min-height: 20px; max-width: 600px; text-align: center; }
-  .status-msg.error { color: #ef4444; } .status-msg.loading { color: #2a9d8f; }
+  .status-msg.error { color: #d32f2f; } .status-msg.loading { color: #2a9d8f; }
   .format-hint {
-    background: #18181b; border: 1px solid #27272a; border-radius: 8px;
+    background: #f5f6f8; border: 1px solid #d0d3d9; border-radius: 8px;
     padding: 16px 20px; max-width: 480px; width: 90vw;
   }
   .format-hint code {
     font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    background: #27272a; padding: 2px 6px; border-radius: 4px; color: #2a9d8f;
+    background: #e2e4e9; padding: 2px 6px; border-radius: 4px; color: #1a7a6e;
   }
-  .format-hint p { font-size: 13px; color: #71717a; line-height: 1.5; }
+  .format-hint p { font-size: 13px; color: #6b6b76; line-height: 1.5; }
 
   /* Viz screen */
   #viz-screen { display: none; padding: 8px; }
   #top-bar {
     display: flex; align-items: center; gap: 16px;
-    padding: 8px 12px; background: #18181b; border-radius: 8px;
+    padding: 8px 12px; background: #f5f6f8; border: 1px solid #d0d3d9; border-radius: 8px;
     margin-bottom: 8px; flex-wrap: wrap;
   }
   .file-info {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #2a9d8f;
-    background: #1a2520; padding: 4px 10px; border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #1a7a6e;
+    background: #e4f2ef; padding: 4px 10px; border-radius: 4px;
   }
-  .dims { font-size: 12px; color: #71717a; }
+  .dims { font-size: 12px; color: #6b6b76; }
   #btn-reload {
-    margin-left: auto; background: #27272a; border: 1px solid #3f3f46;
-    color: #a1a1aa; padding: 5px 14px; border-radius: 6px; cursor: pointer;
+    margin-left: auto; background: #e2e4e9; border: 1px solid #c5c8cf;
+    color: #555; padding: 5px 14px; border-radius: 6px; cursor: pointer;
     font-size: 12px; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
   }
-  #btn-reload:hover { background: #3f3f46; color: #e4e4e7; }
+  #btn-reload:hover { background: #d0d3d9; color: #1a1a1e; }
 
-  /* Error banner on viz screen */
+  /* Error banner */
   #viz-error {
-    display: none; background: #2d1215; border: 1px solid #7f1d1d;
+    display: none; background: #fde8e8; border: 1px solid #f5c6c6;
     border-radius: 8px; padding: 12px 16px; margin-bottom: 8px;
-    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #fca5a5;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #d32f2f;
     white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto;
-  }
-
-  /* Debug panel */
-  #debug-panel {
-    display: none; background: #18181b; border: 1px solid #27272a;
-    border-radius: 8px; padding: 8px 12px; margin-bottom: 8px;
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #71717a;
-    max-height: 120px; overflow-y: auto;
   }
 
   /* Controls */
@@ -82,50 +74,50 @@
   #search-input {
     width: 100%; padding: 4px 26px 4px 8px;
     font-size: 11px; font-family: 'JetBrains Mono', monospace;
-    border: 1px solid #3f3f46; border-radius: 5px;
-    background: #18181b; color: #e4e4e7; outline: none;
+    border: 1px solid #c5c8cf; border-radius: 5px;
+    background: #fff; color: #2d2d30; outline: none;
   }
   #search-input:focus { border-color: #2a9d8f; }
-  #search-input::placeholder { color: #52525b; }
+  #search-input::placeholder { color: #aaa; }
   #search-clear {
     position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
-    cursor: pointer; font-size: 15px; color: #71717a; display: none;
+    cursor: pointer; font-size: 15px; color: #999; display: none;
     user-select: none; line-height: 1;
   }
-  #search-clear:hover { color: #e4e4e7; }
+  #search-clear:hover { color: #333; }
   #dropdown {
     position: absolute; left: 0; right: 0; top: 100%;
     max-height: 200px; overflow-y: auto;
-    background: #27272a; border: 1px solid #3f3f46;
+    background: #fff; border: 1px solid #c5c8cf;
     border-top: none; border-radius: 0 0 6px 6px;
-    display: none; box-shadow: 0 6px 20px rgba(0,0,0,0.5); z-index: 20;
+    display: none; box-shadow: 0 6px 20px rgba(0,0,0,0.12); z-index: 20;
   }
   .dd-item {
     padding: 5px 10px; cursor: pointer; font-size: 11px;
     font-family: 'JetBrains Mono', monospace;
-    border-bottom: 1px solid #3f3f46; color: #d4d4d8;
+    border-bottom: 1px solid #eee; color: #2d2d30;
   }
-  .dd-item:hover, .dd-item.kb-active { background: #3f3f46; }
-  .dd-item b { color: #e4e4e7; }
-  .dd-item .fullname { color: #71717a; font-size: 10px; margin-left: 4px; }
+  .dd-item:hover, .dd-item.kb-active { background: #e8f0fe; }
+  .dd-item b { color: #000; }
+  .dd-item .fullname { color: #888; font-size: 10px; margin-left: 4px; }
 
   .slider-box {
-    position: absolute; font-size: 11px; color: #a1a1aa;
-    background: #18181b; border: 1px solid #27272a;
+    position: absolute; font-size: 11px; color: #555;
+    background: #f5f6f8; border: 1px solid #d0d3d9;
     border-radius: 5px; padding: 3px 8px;
   }
   .slider-box .lbl { font-weight: 600; min-width: 14px; }
   .slider-box .val {
-    min-width: 20px; text-align: right; font-weight: 600; color: #e4e4e7;
+    min-width: 20px; text-align: right; font-weight: 600; color: #1a1a1e;
     font-family: 'JetBrains Mono', monospace; font-size: 10px;
   }
   .slider-row { display: flex; align-items: center; gap: 4px; }
   .slider-box input[type=range] { flex: 1; height: 14px; cursor: pointer; accent-color: #2a9d8f; }
-  .layer-title { font-weight: 600; text-align: center; margin-bottom: 2px; color: #e4e4e7; font-size: 11px; }
+  .layer-title { font-weight: 600; text-align: center; margin-bottom: 2px; color: #1a1a1e; font-size: 11px; }
 
   #scroll-container {
-    overflow: auto; background: #131316;
-    border: 1px solid #27272a; border-radius: 0 0 8px 8px;
+    overflow: auto; background: #f0f1f4;
+    border: 1px solid #d0d3d9; border-radius: 0 0 8px 8px;
     max-height: calc(100vh - 180px);
   }
   #content-sizer { position: relative; }
@@ -133,8 +125,9 @@
   #viz-svg { position: absolute; top: 0; left: 0; z-index: 1; }
 
   #scroll-container::-webkit-scrollbar { width: 8px; }
-  #scroll-container::-webkit-scrollbar-track { background: #18181b; }
-  #scroll-container::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+  #scroll-container::-webkit-scrollbar-track { background: #e2e4e9; }
+  #scroll-container::-webkit-scrollbar-thumb { background: #b8bcc4; border-radius: 4px; }
+  #scroll-container::-webkit-scrollbar-thumb:hover { background: #999; }
 </style>
 </head>
 <body>
@@ -162,7 +155,6 @@
     <button id="btn-reload">Load another file</button>
   </div>
   <div id="viz-error"></div>
-  <div id="debug-panel"></div>
   <div id="controls"></div>
   <div id="scroll-container">
     <div id="content-sizer">
@@ -173,23 +165,6 @@
 </div>
 
 <script>
-// ================================================================
-//  LOGGING
-// ================================================================
-const debugEl = document.getElementById('debug-panel');
-const vizErrEl = document.getElementById('viz-error');
-function log(msg) {
-  console.log('[AV] ' + msg);
-  debugEl.style.display = 'block';
-  debugEl.textContent += msg + '\n';
-  debugEl.scrollTop = debugEl.scrollHeight;
-}
-function showVizError(msg) {
-  vizErrEl.style.display = 'block';
-  vizErrEl.textContent = msg;
-  console.error('[AV ERROR] ' + msg);
-}
-
 // ================================================================
 //  WORKER (inline Blob)
 // ================================================================
@@ -233,12 +208,8 @@ self.onmessage = function(e) {
   self.postMessage({result, layer, thresh, count: limit}, [result.buffer]);
 };
 `;
-  const blob = new Blob([workerCode], {type: 'application/javascript'});
-  workerUrl = URL.createObjectURL(blob);
-  console.log('[AV] Worker blob created OK');
-} catch (e) {
-  console.warn('[AV] Worker blob failed:', e);
-}
+  workerUrl = URL.createObjectURL(new Blob([workerCode], {type: 'application/javascript'}));
+} catch (e) { /* fallback to main thread */ }
 
 // ================================================================
 //  CONSTANTS
@@ -258,8 +229,7 @@ const COL_SP = 175, SL_W = 155, TOP_PAD = 50, BOT_PAD = 15, MAX_TL = 600;
 // ================================================================
 //  STATE
 // ================================================================
-let S = null;
-let workers = [], threshCache = [], useWorkers = true;
+let S = null, workers = [], threshCache = [], useWorkers = true;
 let chain = [], hlRects = [], segments = [];
 let pinnedIdx = -1, pinnedRect = null, activeRowIdx = -1;
 
@@ -269,6 +239,7 @@ let pinnedIdx = -1, pinnedRect = null, activeRowIdx = -1;
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
 const statusEl = document.getElementById('upload-status');
+const vizErrEl = document.getElementById('viz-error');
 
 dropZone.addEventListener('click', () => fileInput.click());
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -289,35 +260,23 @@ async function loadFile(file) {
   statusEl.textContent = `Loading ${file.name} (${(file.size/1e6).toFixed(1)} MB)...`;
   try {
     const buf = await file.arrayBuffer();
-    log(`File loaded: ${file.name}, ${buf.byteLength} bytes`);
     parseAndInit(buf, file.name);
   } catch (err) {
     statusEl.className = 'status-msg error';
     statusEl.textContent = 'Error: ' + err.message;
-    console.error(err);
   }
 }
 
 function parseAndInit(buf, fileName) {
-  // Read header length
   const view = new DataView(buf);
   const headerLen = view.getUint32(0, true);
-  log(`Header length field: ${headerLen}, total buf: ${buf.byteLength}`);
+  if (headerLen > buf.byteLength - 4 || headerLen > 1e7)
+    throw new Error('Invalid header length: ' + headerLen);
 
-  if (headerLen > buf.byteLength - 4 || headerLen > 1e7) {
-    throw new Error(`Invalid header length: ${headerLen}. File may be corrupt or not .attnbin format.`);
-  }
-
-  // Read JSON header (strip zero padding)
   const headerRaw = new Uint8Array(buf, 4, headerLen);
   let jsonEnd = headerLen;
   while (jsonEnd > 0 && headerRaw[jsonEnd - 1] === 0) jsonEnd--;
-  const headerStr = new TextDecoder().decode(new Uint8Array(buf, 4, jsonEnd));
-  log(`Header JSON (first 200): ${headerStr.substring(0, 200)}`);
-
-  let header;
-  try { header = JSON.parse(headerStr); }
-  catch (e) { throw new Error('Failed to parse header JSON: ' + e.message); }
+  const header = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 4, jsonEnd)));
 
   if (header.format !== 'attnbin_v1') throw new Error('Unknown format: ' + header.format);
 
@@ -325,95 +284,67 @@ function parseAndInit(buf, fileName) {
   const isFp16 = header.dtype === 'float16';
   const bpf = isFp16 ? 2 : 4;
   const dataStart = 4 + headerLen;
-
-  log(`Parsed: N=${N} B=${B} H=${H} L=${L} fp16=${isFp16} dataStart=${dataStart}`);
-
-  // Validate sizes
   const boundsSize = B * N * 4;
-  const layerFloats = B * H * N * N;
-  const layerBytes = layerFloats * bpf;
+  const layerBytes = B * H * N * N * bpf;
   const sliceFloats = N * N;
   const sliceBytes = sliceFloats * bpf;
   const expectedTotal = dataStart + boundsSize + L * layerBytes;
 
-  log(`Expected file size: ${expectedTotal}, actual: ${buf.byteLength}`);
-  if (buf.byteLength < expectedTotal) {
-    throw new Error(`File too small: expected ${expectedTotal} bytes, got ${buf.byteLength}. Data might be truncated.`);
-  }
-
-  if (!header.reaction_ids || header.reaction_ids.length !== N) {
-    throw new Error(`reaction_ids length (${header.reaction_ids ? header.reaction_ids.length : 'missing'}) != N (${N})`);
-  }
+  if (buf.byteLength < expectedTotal)
+    throw new Error(`File too small: expected ${expectedTotal} bytes, got ${buf.byteLength}`);
 
   S = {
-    buf, header, N, B, H, L, isFp16, bpf,
+    buf, N, B, H, L, isFp16, bpf,
     ids: header.reaction_ids,
     fullNames: header.full_names || header.reaction_ids,
-    dataStart, boundsSize, layerBytes, sliceBytes, sliceFloats,
-    fileName,
+    dataStart, boundsSize, layerBytes, sliceBytes, sliceFloats, fileName,
   };
 
-  // Layout
   const col0x = NAME_X + NAME_W + GUIDE_GAP;
-  S.colX = [];
-  for (let i = 0; i <= L; i++) S.colX.push(col0x + i * COL_SP);
+  S.colX = []; for (let i = 0; i <= L; i++) S.colX.push(col0x + i * COL_SP);
   S.totalWidth = S.colX[L] + NODE_W + 30;
-  S.yPos = [];
-  for (let i = 0; i < N; i++) S.yPos.push(TOP_PAD + i * (NODE_H + GAP));
+  S.yPos = []; for (let i = 0; i < N; i++) S.yPos.push(TOP_PAD + i * (NODE_H + GAP));
   S.svgHeight = TOP_PAD + N * (NODE_H + GAP) + BOT_PAD;
-  S.bandX = NAME_X;
-  S.bandW = S.colX[L] + NODE_W - NAME_X;
+  S.bandX = NAME_X; S.bandW = S.colX[L] + NODE_W - NAME_X;
 
-  log(`Layout: totalWidth=${S.totalWidth} svgHeight=${S.svgHeight} cols=${S.colX.join(',')}`);
-
-  // Switch screens
   statusEl.textContent = '';
   document.getElementById('upload-screen').style.display = 'none';
   document.getElementById('viz-screen').style.display = 'block';
   document.getElementById('file-name').textContent = fileName;
-  document.getElementById('dims-info').textContent =
-    `N=${N}  B=${B}  H=${H}  L=${L}  ${isFp16?'fp16':'fp32'}`;
+  document.getElementById('dims-info').textContent = `N=${N}  B=${B}  H=${H}  L=${L}  ${isFp16?'fp16':'fp32'}`;
   vizErrEl.style.display = 'none';
 
-  try {
-    buildViz();
-    log('buildViz() completed successfully');
-  } catch (err) {
-    showVizError('Render error: ' + err.message + '\n\n' + err.stack);
-  }
+  try { buildViz(); }
+  catch (err) { vizErrEl.style.display = 'block'; vizErrEl.textContent = err.message + '\n' + err.stack; }
 }
 
 // ================================================================
-//  DATA ACCESS (alignment-safe copies)
+//  DATA ACCESS (alignment-safe)
 // ================================================================
 function getBoundsSlice(batch) {
   const off = S.dataStart + batch * S.N * 4;
-  const src = new Uint8Array(S.buf, off, S.N * 4);
   const dst = new Float32Array(S.N);
-  new Uint8Array(dst.buffer).set(src);
+  new Uint8Array(dst.buffer).set(new Uint8Array(S.buf, off, S.N * 4));
   return dst;
 }
 
 function getAttentionSlice(layer, batch, head) {
-  const layerStart = S.dataStart + S.boundsSize + layer * S.layerBytes;
-  const sliceOff = layerStart + (batch * S.H + head) * S.sliceBytes;
+  const off = S.dataStart + S.boundsSize + layer * S.layerBytes + (batch * S.H + head) * S.sliceBytes;
   if (S.isFp16) {
-    const src = new Uint8Array(S.buf, sliceOff, S.sliceFloats * 2);
-    const u16buf = new Uint16Array(S.sliceFloats);
-    new Uint8Array(u16buf.buffer).set(src);
+    const u16 = new Uint16Array(S.sliceFloats);
+    new Uint8Array(u16.buffer).set(new Uint8Array(S.buf, off, S.sliceFloats * 2));
     const f32 = new Float32Array(S.sliceFloats);
-    for (let i = 0; i < S.sliceFloats; i++) f32[i] = fp16to32(u16buf[i]);
+    for (let i = 0; i < S.sliceFloats; i++) f32[i] = fp16to32(u16[i]);
     return f32;
   }
-  const src = new Uint8Array(S.buf, sliceOff, S.sliceFloats * 4);
   const f32 = new Float32Array(S.sliceFloats);
-  new Uint8Array(f32.buffer).set(src);
+  new Uint8Array(f32.buffer).set(new Uint8Array(S.buf, off, S.sliceFloats * 4));
   return f32;
 }
 
 function fp16to32(h) {
   const s = (h >> 15) & 1, e = (h >> 10) & 0x1F, m = h & 0x3FF;
-  if (e === 0) { return m === 0 ? (s ? -0 : 0) : (s ? -1 : 1) * (m / 1024) * Math.pow(2, -14); }
+  if (e === 0) return m === 0 ? (s ? -0 : 0) : (s ? -1 : 1) * (m / 1024) * Math.pow(2, -14);
   if (e === 31) return m ? NaN : (s ? -Infinity : Infinity);
   return (s ? -1 : 1) * Math.pow(2, e - 15) * (1 + m / 1024);
 }
@@ -439,25 +370,19 @@ function teardown() {
   svgEl.innerHTML = ''; redRects = [];
   canvas.width = 0; canvas.height = 0;
   document.getElementById('controls').innerHTML = '';
-  debugEl.textContent = ''; debugEl.style.display = 'none';
-  vizErrEl.textContent = ''; vizErrEl.style.display = 'none';
+  vizErrEl.style.display = 'none';
   S = null; threshCache = [];
 }
 
 function buildViz() {
   const {N, B, H, L, colX, totalWidth, svgHeight, bandX, bandW, yPos, ids, fullNames} = S;
 
-  log(`Sizing: sizer ${totalWidth}x${svgHeight}, canvas ${totalWidth}x${svgHeight}`);
-
-  // Size containers
-  sizer.style.width = totalWidth + 'px';
-  sizer.style.height = svgHeight + 'px';
+  sizer.style.width = totalWidth + 'px'; sizer.style.height = svgHeight + 'px';
   canvas.width = totalWidth; canvas.height = svgHeight;
   canvas.style.width = totalWidth + 'px'; canvas.style.height = svgHeight + 'px';
   svgEl.setAttribute('width', totalWidth); svgEl.setAttribute('height', svgHeight);
   svgEl.style.width = totalWidth + 'px'; svgEl.style.height = svgHeight + 'px';
 
-  // CSS
   let css = '';
   for (let c = 0; c <= L; c++) {
     const [f, s, h] = PALETTE[c % PALETTE.length];
@@ -465,126 +390,90 @@ function buildViz() {
   }
   css += `.hl{fill:none;stroke:#ff69b4;stroke-width:2;pointer-events:none;rx:2;ry:2;}`;
   css += `.conn{stroke:#ff69b4;pointer-events:none;}`;
-  css += `.vl{pointer-events:none;font-size:9px;fill:#ff69b4;font-weight:bold;font-family:'JetBrains Mono',monospace;}`;
+  css += `.vl{pointer-events:none;font-size:9px;fill:#c0458a;font-weight:bold;font-family:'JetBrains Mono',monospace;}`;
   css += `.nbg{fill:#1a1a1a;rx:1;ry:1;}.nred{fill:#cc2222;rx:1;ry:1;pointer-events:none;}`;
   css += `.nbar{fill:transparent;stroke:none;cursor:pointer;rx:1;ry:1;}.nbar:hover{stroke:#ffcc00;stroke-width:1.2;}`;
   css += `.ntxt{fill:#fff;font-size:${Math.max(NODE_H-2,5)}px;font-family:'JetBrains Mono',monospace;pointer-events:none;}`;
-  css += `.guide{stroke:#52525b;stroke-width:0.5;stroke-dasharray:2,2;pointer-events:none;}`;
-  css += `.rowband{fill:#52525b;opacity:0.3;pointer-events:none;}`;
-  css += `.pinband{fill:#c4a35a;opacity:0.35;pointer-events:none;}`;
+  css += `.guide{stroke:#b8bcc4;stroke-width:0.5;stroke-dasharray:2,2;pointer-events:none;}`;
+  css += `.rowband{fill:#aab0ba;opacity:0.3;pointer-events:none;}`;
+  css += `.pinband{fill:#ffe066;opacity:0.38;pointer-events:none;}`;
   css += `.tt{pointer-events:none;}`;
   const styleEl = document.createElementNS(svgNS, 'style');
   styleEl.textContent = css; svgEl.appendChild(styleEl);
 
-  log('SVG style injected');
-
-  // Groups (layering order)
   svgG.pinBand = mg(); svgG.hoverBand = mg(); svgG.conn = mg(); svgG.nodes = mg();
 
-  // Hover band
   rowBand = mr(bandX, 0, bandW, NODE_H, 'rowband');
   rowBand.setAttribute('visibility', 'hidden');
   svgG.hoverBand.appendChild(rowBand);
 
-  log(`Drawing ${N} name bars and ${(L+1)*N} node rects...`);
-
-  // Name bars
   redRects = [];
   for (let i = 0; i < N; i++) {
     const y = yPos[i];
     svgG.nodes.appendChild(mr(NAME_X, y, NAME_W, NODE_H, 'nbg'));
     const red = mr(NAME_X, y, 0, NODE_H, 'nred');
     svgG.nodes.appendChild(red); redRects.push(red);
-
     const txt = document.createElementNS(svgNS, 'text');
     txt.setAttribute('x', NAME_X + 3); txt.setAttribute('y', y + NODE_H - 1.5);
-    txt.classList.add('ntxt'); txt.textContent = ids[i];
-    svgG.nodes.appendChild(txt);
-
+    txt.classList.add('ntxt'); txt.textContent = ids[i]; svgG.nodes.appendChild(txt);
     const hit = mr(NAME_X, y, NAME_W, NODE_H, 'nbar');
     hit.dataset.nbar = i; svgG.nodes.appendChild(hit);
-
     const gl = document.createElementNS(svgNS, 'line');
     gl.setAttribute('x1', NAME_X + NAME_W); gl.setAttribute('y1', yc(i));
     gl.setAttribute('x2', colX[0]); gl.setAttribute('y2', yc(i));
     gl.classList.add('guide'); svgG.nodes.appendChild(gl);
   }
-
-  // Node columns
   for (let col = 0; col <= L; col++) {
     for (let i = 0; i < N; i++) {
       const r = mr(colX[col], yPos[i], NODE_W, NODE_H, 'ncol' + col);
       r.setAttribute('rx', 1); r.setAttribute('ry', 1);
-      r.dataset.col = col; r.dataset.idx = i;
-      svgG.nodes.appendChild(r);
+      r.dataset.col = col; r.dataset.idx = i; svgG.nodes.appendChild(r);
     }
   }
-
-  log(`SVG elements created: ~${4*N + (L+1)*N} rects`);
 
   // Tooltip
   ttRect = mr(0,0,0,0,'tt');
   ttRect.setAttribute('rx',4); ttRect.setAttribute('ry',4);
-  ttRect.setAttribute('fill','#27272a'); ttRect.setAttribute('stroke','#3f3f46');
+  ttRect.setAttribute('fill','#fff'); ttRect.setAttribute('stroke','#c5c8cf');
   ttRect.setAttribute('stroke-width',0.8); ttRect.setAttribute('visibility','hidden');
   svgEl.appendChild(ttRect);
-  ttText1 = document.createElementNS(svgNS,'text');
-  ttText1.classList.add('tt'); ttText1.setAttribute('font-size','11');
-  ttText1.setAttribute('fill','#e4e4e7');
+  ttText1 = document.createElementNS(svgNS,'text'); ttText1.classList.add('tt');
+  ttText1.setAttribute('font-size','11'); ttText1.setAttribute('fill','#1a1a1e');
   ttText1.setAttribute('font-family',"'JetBrains Mono',monospace");
   ttText1.setAttribute('visibility','hidden'); svgEl.appendChild(ttText1);
-  ttText2 = document.createElementNS(svgNS,'text');
-  ttText2.classList.add('tt'); ttText2.setAttribute('font-size','10');
-  ttText2.setAttribute('fill','#71717a');
+  ttText2 = document.createElementNS(svgNS,'text'); ttText2.classList.add('tt');
+  ttText2.setAttribute('font-size','10'); ttText2.setAttribute('fill','#6b6b76');
   ttText2.setAttribute('font-family',"'JetBrains Mono',monospace");
   ttText2.setAttribute('visibility','hidden'); svgEl.appendChild(ttText2);
 
-  // Controls
   buildControls();
-  log('Controls built');
 
-  // Workers
   threshCache = new Array(L).fill(null);
   if (workerUrl) {
     try {
       for (let l = 0; l < L; l++) {
         const w = new Worker(workerUrl);
         w.onmessage = onWorkerMsg;
-        w.onerror = (e) => { log('Worker error: ' + e.message); useWorkers = false; };
+        w.onerror = () => { useWorkers = false; };
         workers.push(w);
       }
       useWorkers = true;
-      log(`${L} workers created`);
-    } catch (e) {
-      log('Worker creation failed: ' + e.message + ', using fallback');
-      useWorkers = false;
-    }
-  } else {
-    useWorkers = false;
-    log('No worker URL, using main-thread fallback');
-  }
+    } catch (e) { useWorkers = false; }
+  } else { useWorkers = false; }
 
-  // Initial data render
-  log('Updating red fills...');
   updateRedFills();
-  log('Requesting threshold lines...');
   requestAllThresh();
 
-  // Events
   svgEl.addEventListener('click', onSvgClick);
   svgEl.addEventListener('mousemove', onSvgMove);
   svgEl.addEventListener('mouseleave', () => { hideRowBand(); hideTT(); });
-
-  log('All done — visualization should be visible');
 }
 
-// SVG helpers
 function mg() { const g = document.createElementNS(svgNS,'g'); svgEl.appendChild(g); return g; }
 function mr(x,y,w,h,cls) {
   const r = document.createElementNS(svgNS,'rect');
-  r.setAttribute('x',x); r.setAttribute('y',y);
-  r.setAttribute('width',w); r.setAttribute('height',h);
-  if (cls) r.classList.add(cls); return r;
+  r.setAttribute('x',x);r.setAttribute('y',y);r.setAttribute('width',w);r.setAttribute('height',h);
+  if(cls)r.classList.add(cls); return r;
 }
 function yc(i) { return S.yPos[i] + NODE_H / 2; }
 function debounce(fn, ms) { let t; return function(...a) { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), ms); }; }
@@ -595,10 +484,8 @@ function debounce(fn, ms) { let t; return function(...a) { clearTimeout(t); t = 
 function buildControls() {
   const {N, B, H, L, colX, totalWidth} = S;
   const cDiv = document.getElementById('controls');
-  cDiv.style.width = totalWidth + 'px';
-  cDiv.innerHTML = '';
+  cDiv.style.width = totalWidth + 'px'; cDiv.innerHTML = '';
 
-  // Search
   const sw = document.createElement('div'); sw.id = 'search-wrap';
   sw.innerHTML = `<div style="position:relative;">
     <input id="search-input" type="text" placeholder="Search reaction..." autocomplete="off">
@@ -606,7 +493,6 @@ function buildControls() {
     <div id="dropdown"></div></div>`;
   cDiv.appendChild(sw);
 
-  // Batch
   const bb = document.createElement('div'); bb.className = 'slider-box';
   bb.style.cssText = 'left:5px;top:26px;width:200px;';
   bb.innerHTML = `<div class="slider-row"><span class="lbl">Batch</span>
@@ -630,7 +516,6 @@ function buildControls() {
     cDiv.appendChild(box);
   }
 
-  // Wire sliders
   document.getElementById('sl-batch').addEventListener('input', debounce(function() {
     curBatch = parseInt(this.value);
     document.getElementById('val-batch').textContent = curBatch;
@@ -654,66 +539,58 @@ function buildControls() {
 }
 
 // ================================================================
-//  THRESHOLD (Worker + main-thread fallback)
+//  THRESHOLD
 // ================================================================
 function computeThreshMain(layer) {
   const matrix = getAttentionSlice(layer, curBatch, curHeads[layer]);
-  const N = S.N;
-  let mn = Infinity, mx = -Infinity;
-  for (let i = 0; i < N * N; i++) { const v = Math.abs(matrix[i]); if (v < mn) mn = v; if (v > mx) mx = v; }
+  const N = S.N; let mn = Infinity, mx = -Infinity;
+  for (let i = 0; i < N*N; i++) { const v = Math.abs(matrix[i]); if(v<mn)mn=v; if(v>mx)mx=v; }
   const thresh = mn + curThreshFracs[layer] * (mx - mn);
   const entries = [];
   for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
-    const v = Math.abs(matrix[r * N + c]);
-    if (v >= thresh) entries.push({r, c, v});
+    const v = Math.abs(matrix[r*N+c]); if(v>=thresh)entries.push({r,c,v});
   }
-  entries.sort((a, b) => b.v - a.v);
-  const limit = Math.min(entries.length, MAX_TL);
-  const range = mx - thresh;
-  const result = new Float32Array(limit * 3);
+  entries.sort((a,b) => b.v-a.v);
+  const limit = Math.min(entries.length, MAX_TL), range = mx-thresh;
+  const result = new Float32Array(limit*3);
   for (let i = 0; i < limit; i++) {
-    let alpha = 0.08;
-    if (range > 0) alpha = 0.05 + ((entries[i].v - thresh) / range) * 0.45;
-    result[i*3] = entries[i].r;
-    result[i*3+1] = entries[i].c;
-    result[i*3+2] = alpha;
+    let alpha = 0.08; if(range>0) alpha = 0.05+((entries[i].v-thresh)/range)*0.45;
+    result[i*3]=entries[i].r; result[i*3+1]=entries[i].c; result[i*3+2]=alpha;
   }
-  threshCache[layer] = {result, count: limit};
-  const v = document.getElementById('val-thresh-' + layer);
-  if (v) v.textContent = thresh.toExponential(2);
+  threshCache[layer] = {result, count:limit};
+  const v = document.getElementById('val-thresh-'+layer);
+  if(v) v.textContent = thresh.toExponential(2);
   drawCanvas();
 }
 
 function requestThresh(l) {
   if (useWorkers && workers[l]) {
     const sl = getAttentionSlice(l, curBatch, curHeads[l]);
-    workers[l].postMessage({matrix: sl, N: S.N, threshFrac: curThreshFracs[l], maxLines: MAX_TL, layer: l}, [sl.buffer]);
-  } else {
-    computeThreshMain(l);
-  }
+    workers[l].postMessage({matrix:sl, N:S.N, threshFrac:curThreshFracs[l], maxLines:MAX_TL, layer:l}, [sl.buffer]);
+  } else computeThreshMain(l);
 }
-function requestAllThresh() { for (let l = 0; l < S.L; l++) requestThresh(l); }
+function requestAllThresh() { for (let l=0;l<S.L;l++) requestThresh(l); }
 
 function onWorkerMsg(e) {
   const {result, layer, thresh, count} = e.data;
   threshCache[layer] = {result: new Float32Array(result), count};
-  const v = document.getElementById('val-thresh-' + layer);
-  if (v) v.textContent = thresh.toExponential(2);
+  const v = document.getElementById('val-thresh-'+layer);
+  if(v) v.textContent = thresh.toExponential(2);
   drawCanvas();
 }
 
 function drawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let l = 0; l < S.L; l++) {
-    const tc = threshCache[l]; if (!tc) continue;
+    const tc = threshCache[l]; if(!tc) continue;
     const {result, count} = tc;
-    const x1 = S.colX[l] + NODE_W, x2 = S.colX[l + 1];
-    ctx.strokeStyle = '#888'; ctx.lineWidth = 0.8;
+    const x1 = S.colX[l]+NODE_W, x2 = S.colX[l+1];
+    ctx.strokeStyle = '#999'; ctx.lineWidth = 0.8;
     for (let i = 0; i < count; i++) {
       ctx.globalAlpha = result[i*3+2];
       ctx.beginPath();
-      ctx.moveTo(x1, S.yPos[result[i*3]] + NODE_H/2);
-      ctx.lineTo(x2, S.yPos[result[i*3+1]] + NODE_H/2);
+      ctx.moveTo(x1, S.yPos[result[i*3]]+NODE_H/2);
+      ctx.lineTo(x2, S.yPos[result[i*3+1]]+NODE_H/2);
       ctx.stroke();
     }
   }
@@ -726,58 +603,41 @@ function drawCanvas() {
 function updateRedFills() {
   const bv = getBoundsSlice(curBatch);
   let mx = -Infinity;
-  for (let i = 0; i < S.N; i++) { const a = Math.abs(bv[i]); if (a > mx) mx = a; }
-  if (mx <= 0) mx = 1;
-  for (let i = 0; i < S.N; i++) redRects[i].setAttribute('width', (Math.abs(bv[i])/mx)*NAME_W);
+  for (let i=0;i<S.N;i++){const a=Math.abs(bv[i]);if(a>mx)mx=a;}
+  if(mx<=0)mx=1;
+  for (let i=0;i<S.N;i++) redRects[i].setAttribute('width',(Math.abs(bv[i])/mx)*NAME_W);
 }
 
 // ================================================================
 //  HOVER / PIN
 // ================================================================
-function showRowBand(i) { if(i===activeRowIdx)return; activeRowIdx=i; rowBand.setAttribute('y',S.yPos[i]); rowBand.setAttribute('visibility','visible'); }
-function hideRowBand() { if(activeRowIdx<0)return; activeRowIdx=-1; rowBand.setAttribute('visibility','hidden'); }
-
-function pinRow(i) {
-  unpinRow(); pinnedIdx=i;
-  pinnedRect = mr(S.bandX, S.yPos[i], S.bandW, NODE_H, 'pinband');
-  svgG.pinBand.appendChild(pinnedRect);
-  document.getElementById('search-input').value = S.ids[i];
-  document.getElementById('search-clear').style.display = 'inline';
-}
-function unpinRow() { if(pinnedRect){pinnedRect.remove();pinnedRect=null;} pinnedIdx=-1; }
+function showRowBand(i){if(i===activeRowIdx)return;activeRowIdx=i;rowBand.setAttribute('y',S.yPos[i]);rowBand.setAttribute('visibility','visible');}
+function hideRowBand(){if(activeRowIdx<0)return;activeRowIdx=-1;rowBand.setAttribute('visibility','hidden');}
+function pinRow(i){unpinRow();pinnedIdx=i;pinnedRect=mr(S.bandX,S.yPos[i],S.bandW,NODE_H,'pinband');svgG.pinBand.appendChild(pinnedRect);document.getElementById('search-input').value=S.ids[i];document.getElementById('search-clear').style.display='inline';}
+function unpinRow(){if(pinnedRect){pinnedRect.remove();pinnedRect=null;}pinnedIdx=-1;}
 
 // ================================================================
 //  TOOLTIP
 // ================================================================
-function showTT(x,y,l1,l2) {
-  ttText1.setAttribute('x',x); ttText1.setAttribute('y',y);
-  ttText1.setAttribute('text-anchor','start');
-  ttText1.textContent=l1; ttText1.setAttribute('visibility','visible');
-  if(l2){ttText2.setAttribute('x',x);ttText2.setAttribute('y',y+13);
-    ttText2.setAttribute('text-anchor','start');ttText2.textContent=l2;ttText2.setAttribute('visibility','visible');
-  } else ttText2.setAttribute('visibility','hidden');
-  const b1=ttText1.getBBox();
-  let bx=b1.x,by=b1.y,bw=b1.width,bh=b1.height;
+function showTT(x,y,l1,l2){
+  ttText1.setAttribute('x',x);ttText1.setAttribute('y',y);ttText1.setAttribute('text-anchor','start');
+  ttText1.textContent=l1;ttText1.setAttribute('visibility','visible');
+  if(l2){ttText2.setAttribute('x',x);ttText2.setAttribute('y',y+13);ttText2.setAttribute('text-anchor','start');ttText2.textContent=l2;ttText2.setAttribute('visibility','visible');}
+  else ttText2.setAttribute('visibility','hidden');
+  const b1=ttText1.getBBox();let bx=b1.x,by=b1.y,bw=b1.width,bh=b1.height;
   if(l2){const b2=ttText2.getBBox();bx=Math.min(bx,b2.x);by=Math.min(by,b2.y);bw=Math.max(b1.x+b1.width,b2.x+b2.width)-bx;bh=(b2.y+b2.height)-by;}
-  ttRect.setAttribute('x',bx-5);ttRect.setAttribute('y',by-3);
-  ttRect.setAttribute('width',bw+10);ttRect.setAttribute('height',bh+6);
-  ttRect.setAttribute('visibility','visible');
+  ttRect.setAttribute('x',bx-5);ttRect.setAttribute('y',by-3);ttRect.setAttribute('width',bw+10);ttRect.setAttribute('height',bh+6);ttRect.setAttribute('visibility','visible');
 }
-function hideTT() { ttText1.setAttribute('visibility','hidden');ttText2.setAttribute('visibility','hidden');ttRect.setAttribute('visibility','hidden'); }
+function hideTT(){ttText1.setAttribute('visibility','hidden');ttText2.setAttribute('visibility','hidden');ttRect.setAttribute('visibility','hidden');}
 
 // ================================================================
 //  CHAIN
 // ================================================================
-function clearChain() { hlRects.forEach(r=>r.remove()); segments.forEach(s=>s.forEach(a=>a.remove())); hlRects=[]; segments=[]; chain=[]; }
+function clearChain(){hlRects.forEach(r=>r.remove());segments.forEach(s=>s.forEach(a=>a.remove()));hlRects=[];segments=[];chain=[];}
+function makeHL(col,idx){const p=3,r=mr(S.colX[col]-p,S.yPos[idx]-p,NODE_W+p*2,NODE_H+p*2,'hl');svgEl.appendChild(r);return r;}
 
-function makeHL(col,idx) {
-  const p=3,r=mr(S.colX[col]-p,S.yPos[idx]-p,NODE_W+p*2,NODE_H+p*2,'hl');
-  svgEl.appendChild(r); return r;
-}
-
-function makeSeg(kc,ki,qi) {
-  const m=getAttentionSlice(kc,curBatch,curHeads[kc]);
-  const val=m[ki*S.N+qi];
+function makeSeg(kc,ki,qi){
+  const m=getAttentionSlice(kc,curBatch,curHeads[kc]),val=m[ki*S.N+qi];
   let rn=Infinity,rx=-Infinity;
   for(let c=0;c<S.N;c++){const v=Math.abs(m[ki*S.N+c]);if(v<rn)rn=v;if(v>rx)rx=v;}
   let nm=0.5;if(rx>rn)nm=(Math.abs(val)-rn)/(rx-rn);
@@ -789,17 +649,16 @@ function makeSeg(kc,ki,qi) {
   line.classList.add('conn');svgG.conn.appendChild(line);arts.push(line);
   const midx=(S.colX[kc]+NODE_W+S.colX[kc+1])/2,midy=(yc(ki)+yc(qi))/2;
   const lbl=document.createElementNS(svgNS,'text');
-  lbl.setAttribute('x',midx);lbl.setAttribute('y',midy-4);
-  lbl.setAttribute('text-anchor','middle');lbl.classList.add('vl');
-  lbl.textContent=val.toExponential(3);svgEl.appendChild(lbl);arts.push(lbl);
+  lbl.setAttribute('x',midx);lbl.setAttribute('y',midy-4);lbl.setAttribute('text-anchor','middle');
+  lbl.classList.add('vl');lbl.textContent=val.toExponential(3);svgEl.appendChild(lbl);arts.push(lbl);
   return arts;
 }
 
-function redrawAllSeg() { for(let i=0;i<segments.length;i++){segments[i].forEach(a=>a.remove());segments[i]=makeSeg(chain[i].col,chain[i].idx,chain[i+1].idx);} }
-function redrawSegForLayer(l) { for(let i=0;i<segments.length;i++)if(chain[i].col===l){segments[i].forEach(a=>a.remove());segments[i]=makeSeg(chain[i].col,chain[i].idx,chain[i+1].idx);} }
-function extend(col,idx) { const p=chain[chain.length-1];chain.push({col,idx});hlRects.push(makeHL(col,idx));segments.push(makeSeg(p.col,p.idx,idx)); }
-function truncFrom(pos) { while(hlRects.length>pos)hlRects.pop().remove();const sc=Math.max(0,pos-1);while(segments.length>sc)segments.pop().forEach(a=>a.remove());chain.length=pos; }
-function replaceAt(pos,col,idx) {
+function redrawAllSeg(){for(let i=0;i<segments.length;i++){segments[i].forEach(a=>a.remove());segments[i]=makeSeg(chain[i].col,chain[i].idx,chain[i+1].idx);}}
+function redrawSegForLayer(l){for(let i=0;i<segments.length;i++)if(chain[i].col===l){segments[i].forEach(a=>a.remove());segments[i]=makeSeg(chain[i].col,chain[i].idx,chain[i+1].idx);}}
+function extend(col,idx){const p=chain[chain.length-1];chain.push({col,idx});hlRects.push(makeHL(col,idx));segments.push(makeSeg(p.col,p.idx,idx));}
+function truncFrom(pos){while(hlRects.length>pos)hlRects.pop().remove();const sc=Math.max(0,pos-1);while(segments.length>sc)segments.pop().forEach(a=>a.remove());chain.length=pos;}
+function replaceAt(pos,col,idx){
   hlRects[pos].remove();hlRects[pos]=makeHL(col,idx);
   if(pos>0){segments[pos-1].forEach(a=>a.remove());segments[pos-1]=makeSeg(chain[pos-1].col,chain[pos-1].idx,idx);}
   if(pos<chain.length-1){segments[pos].forEach(a=>a.remove());segments[pos]=makeSeg(col,idx,chain[pos+1].idx);}
@@ -809,14 +668,10 @@ function replaceAt(pos,col,idx) {
 // ================================================================
 //  SVG EVENTS
 // ================================================================
-function onSvgClick(e) {
+function onSvgClick(e){
   const t=e.target;
-  if(t.dataset&&t.dataset.nbar!==undefined){
-    const i=parseInt(t.dataset.nbar);
-    if(pinnedIdx===i){unpinRow();document.getElementById('search-input').value='';document.getElementById('search-clear').style.display='none';}
-    else pinRow(i);
-    return;
-  }
+  if(t.dataset&&t.dataset.nbar!==undefined){const i=parseInt(t.dataset.nbar);
+    if(pinnedIdx===i){unpinRow();document.getElementById('search-input').value='';document.getElementById('search-clear').style.display='none';}else pinRow(i);return;}
   if(!t.dataset||t.dataset.col===undefined)return;
   const col=parseInt(t.dataset.col),idx=parseInt(t.dataset.idx);
   if(!chain.length){chain.push({col,idx});hlRects.push(makeHL(col,idx));return;}
@@ -826,37 +681,28 @@ function onSvgClick(e) {
   clearChain();chain.push({col,idx});hlRects.push(makeHL(col,idx));
 }
 
-function onSvgMove(e) {
+function onSvgMove(e){
   const t=e.target;
-  if(t.dataset&&t.dataset.nbar!==undefined){
-    const i=parseInt(t.dataset.nbar);showRowBand(i);
-    const bv=getBoundsSlice(curBatch);
-    showTT(NAME_X+NAME_W+8,S.yPos[i]+NODE_H/2,S.fullNames[i],'Bound: '+bv[i].toExponential(3));
-    return;
-  }
-  if(t.dataset&&t.dataset.col!==undefined){
-    const i=parseInt(t.dataset.idx);showRowBand(i);
-    showTT(parseFloat(t.getAttribute('x'))+NODE_W+8,parseFloat(t.getAttribute('y'))+NODE_H/2+4,S.fullNames[i],null);
-    return;
-  }
+  if(t.dataset&&t.dataset.nbar!==undefined){const i=parseInt(t.dataset.nbar);showRowBand(i);
+    const bv=getBoundsSlice(curBatch);showTT(NAME_X+NAME_W+8,S.yPos[i]+NODE_H/2,S.fullNames[i],'Bound: '+bv[i].toExponential(3));return;}
+  if(t.dataset&&t.dataset.col!==undefined){const i=parseInt(t.dataset.idx);showRowBand(i);
+    showTT(parseFloat(t.getAttribute('x'))+NODE_W+8,parseFloat(t.getAttribute('y'))+NODE_H/2+4,S.fullNames[i],null);return;}
   hideRowBand();hideTT();
 }
 
 // ================================================================
 //  SEARCH
 // ================================================================
-function wireSearch() {
+function wireSearch(){
   const inp=document.getElementById('search-input'),dd=document.getElementById('dropdown'),clr=document.getElementById('search-clear');
   const idL=S.ids.map(s=>s.toLowerCase()),nmL=S.fullNames.map(s=>s.toLowerCase());
   function match(q){if(!q)return[];q=q.toLowerCase();
     const sc=[];for(let i=0;i<S.N;i++){let s=-1;if(idL[i].startsWith(q))s=3;else if(idL[i].includes(q))s=2;else if(nmL[i].includes(q))s=1;if(s>0)sc.push({idx:i,s});}
-    sc.sort((a,b)=>b.s-a.s||a.idx-b.idx);return sc.slice(0,12);
-  }
+    sc.sort((a,b)=>b.s-a.s||a.idx-b.idx);return sc.slice(0,12);}
   function renderDD(ms){dd.innerHTML='';if(!ms.length){dd.style.display='none';return;}dd.style.display='block';
     for(const m of ms){const d=document.createElement('div');d.className='dd-item';
       d.innerHTML=`<b>${S.ids[m.idx]}</b><span class="fullname">${S.fullNames[m.idx]}</span>`;
-      d.dataset.idx=m.idx;d.addEventListener('mousedown',ev=>{ev.preventDefault();sel(parseInt(d.dataset.idx));});dd.appendChild(d);}
-  }
+      d.dataset.idx=m.idx;d.addEventListener('mousedown',ev=>{ev.preventDefault();sel(parseInt(d.dataset.idx));});dd.appendChild(d);}}
   function sel(i){dd.style.display='none';pinRow(i);scrollEl.scrollTop=Math.max(0,S.yPos[i]-scrollEl.clientHeight/2+NODE_H/2);}
   function clrS(){inp.value='';dd.style.display='none';clr.style.display='none';unpinRow();}
   inp.addEventListener('input',()=>{const q=inp.value.trim();clr.style.display=q?'inline':'none';if(!q)unpinRow();renderDD(match(q));});
